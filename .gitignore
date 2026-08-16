@@ -1,0 +1,26 @@
+# Build outputs
+Debug/
+Release/
+*.o
+*.d
+*.su
+*.cyclo
+*.elf
+*.map
+*.list
+*.bin
+*.hex
+
+# CMake / CLI builds
+build/
+compile_commands.json
+
+# Tool caches (clangd, etc.)
+.cache/
+
+# CubeMX regenerated state (the .ioc is the source of truth)
+.mxproject
+
+# Eclipse workspace
+.metadata/
+.settings/language.settings.xml
