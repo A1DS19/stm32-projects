@@ -19,7 +19,7 @@ kept as-is.
 source /etc/profile.d/cubeclt-bin-path_1.22.0.sh   # login shells get this free; scripts must source it
 cmake --preset Debug && cmake --build build/Debug   # from a project dir, e.g. cli-test/
 STM32_Programmer_CLI -c port=SWD -w build/Debug/<name>.elf -v -rst   # flash, verify, reset
-ST-LINK_gdbserver -p 61234 -cp /opt/st/stm32cubeclt_1.22.0/STM32CubeProgrammer/bin   # then: arm-none-eabi-gdb <elf> -ex 'target remote :61234'
+ST-LINK_gdbserver -p 61234 -d -cp /opt/st/stm32cubeclt_1.22.0/STM32CubeProgrammer/bin   # -d = SWD (required); then: arm-none-eabi-gdb <elf> -ex 'target remote :61234'
 ```
 
 New project: script CubeMX headless (`loadboard NUCLEO-L476RG allmodes`, `project toolchain CMake`,
