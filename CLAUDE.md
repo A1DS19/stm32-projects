@@ -1,38 +1,46 @@
 # stm32-projects
 
-STM32 workspace for the Nucleo-L476RG, built around a CLI-first workflow: headless CubeMX
-generates CMake projects, CubeCLT builds and flashes them — no IDE in the loop. Legacy
-Eclipse-managed CubeIDE projects (`testing-target/`, `testing-host/`) predate this and are
-kept as-is.
+STM32 workspace for the Nucleo-L476RG, CLI-first: CubeCLT builds, flashes, and debugs —
+no IDE in the loop. Hosts one directory per online-course project, each self-contained
+with its own Makefile. Current: `microcontroller-embedded-c-programming/` — a bare-metal
+(no HAL) register-level project for the "Microcontroller Embedded C Programming" course.
+One `Src/main.c`, overwritten per lesson; git history is the archive.
 
 ## Stack
 
 - STM32L476RG (Nucleo-64 board, on-board ST-LINK V2)
 - STM32CubeCLT 1.22.0 (`/opt/st/stm32cubeclt_1.22.0/`): arm-none-eabi GCC 14.3, CMake + Ninja, `STM32_Programmer_CLI`, `ST-LINK_gdbserver`
-- STM32CubeMX 6.18.1 (`~/STM32CubeMX/`), driven headless with `-q <script>`
-- STM32Cube_FW_L4 firmware pack in `~/STM32Cube/Repository/`
+- CMSIS headers only (no HAL sources) from `~/STM32Cube/Repository/STM32Cube_FW_L4_V1.18.2/`, wired as include paths in the project's `CMakeLists.txt`
 - Kingst LA2016 logic analyzer, KingstVIS in `~/Apps/KingstVIS/`
 
 ## Run & test
 
-```sh
-source /etc/profile.d/cubeclt-bin-path_1.22.0.sh   # login shells get this free; scripts must source it
-cmake --preset Debug && cmake --build build/Debug   # from a project dir, e.g. cli-test/
-STM32_Programmer_CLI -c port=SWD -w build/Debug/<name>.elf -v -rst   # flash, verify, reset
-ST-LINK_gdbserver -p 61234 -d -cp /opt/st/stm32cubeclt_1.22.0/STM32CubeProgrammer/bin   # -d = SWD (required); then: arm-none-eabi-gdb <elf> -ex 'target remote :61234'
-```
+Each project carries its own Makefile — `cd` into the project dir and:
 
-New project: script CubeMX headless (`loadboard NUCLEO-L476RG allmodes`, `project toolchain CMake`,
-`project generate`). Install missing firmware packs first: `swmgr install stm32cube_l4_1.18.2 ask` —
-`project generate` silently no-ops without the pack. `-q` mode still pops GUI dialogs when a
-display is present; expect to click them.
+| Command | Does |
+|---|---|
+| `make build` | CMake preset Debug + ninja; prints memory usage |
+| `make flash` | program + verify + reset over SWD |
+| `make serial` | open the VCP terminal (resolves port by USB identity — never assume ttyACM0) |
+| `make gdb-server` / `make debug` | two-terminal step debugging (server carries the required `-d`) |
+| `make size` / `symbols` / `disasm` | inspect the ELF |
+| `make reset` / `clean` | restart board / wipe build |
 
-Full lifecycle recipe (create → build → edit → flash → debug → reconfigure → serial): [docs/cli-workflow.md](docs/cli-workflow.md).
+F5 in VS Code = build, flash, halt at `main` (Cortex-Debug, SVD registers).
 
-## Conventions
+## Project layout & conventions
 
-- User code goes only between `/* USER CODE BEGIN/END */` markers — everything else is CubeMX-owned and lost on regeneration from the `.ioc`.
-- Peripheral/pin changes go through the project's `.ioc` (CubeMX), then regenerate; never hand-edit generated init code.
+- Empty-project shape (seeded from the ST VS Code extension): `Src/` (`main.c`,
+  `startup_stm32l476xx.S`, `syscall.c`, `sysmem.c`, `system.c`, `uart2.c`), `Inc/`,
+  `stm32l476xg_flash.ld`, modular `cmake/`.
+- `cmake/*.cmake` and the non-user sections of `CMakeLists.txt` are managed-file style —
+  add sources/includes/defines only in the marked "User defined" sections of `CMakeLists.txt`.
+- `Src/system.c` owns `SystemInit`: it enables the FPU (CP10/CP11). Do not remove — the
+  project compiles hard-float and newlib printf hard-faults without it.
+- `Src/uart2.c` is printf's backend (USART2 PA2/PA3, 115200 8N1, register-level via
+  `__io_putchar`). Lessons call `uart2_init()` first if they print. End printf lines `\r\n`.
+- No CubeMX, no `.ioc` — peripheral setup is hand-written register code, that's the point
+  of the course. (Headless-CubeMX recipe for future HAL projects: [docs/cli-workflow.md](docs/cli-workflow.md).)
 - Vocabulary in [agents/CONTEXT.md](agents/CONTEXT.md); hard decisions in [agents/decisions.md](agents/decisions.md); milestones in [agents/roadmap.md](agents/roadmap.md).
 - Git: never add AI attribution to commits or PRs — no `Co-Authored-By: Claude …` trailers, no
   "Generated with Claude Code" footers. The user is the sole author in the contributor history.

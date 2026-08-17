@@ -1,0 +1,13 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build microcontroller-embedded-c-programming",
+      "type": "shell",
+      "command": "make build",
+      "options": { "cwd": "${workspaceFolder}/microcontroller-embedded-c-programming" },
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": ["$gcc"]
+    }
+  ]
+}

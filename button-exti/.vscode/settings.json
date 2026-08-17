@@ -1,5 +1,0 @@
-{
-  "cortex-debug.armToolchainPath": "/opt/st/stm32cubeclt_1.22.0/GNU-tools-for-STM32/bin",
-  "cortex-debug.stlinkPath": "/opt/st/stm32cubeclt_1.22.0/STLink-gdb-server/bin/ST-LINK_gdbserver",
-  "cortex-debug.stm32cubeprogrammer": "/opt/st/stm32cubeclt_1.22.0/STM32CubeProgrammer/bin"
-}
