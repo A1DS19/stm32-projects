@@ -19,10 +19,13 @@ exit
 Run it:
 
 ```sh
-~/STM32CubeMX/STM32CubeMX -q gen.txt
+~/STM32CubeMX/STM32CubeMX -q "$PWD/gen.txt"
 ```
 
 Caveats:
+- The script path must be absolute: CubeMX chdirs to its install dir on startup, so a
+  relative path resolves against `~/STM32CubeMX/`, and on a missing script `-q` doesn't
+  exit — it hangs as an idle interactive session (FileNotFoundException buried in the log).
 - The MCU family's firmware pack must already be installed, or `project generate` silently
   writes only the `.ioc`: `swmgr install stm32cube_l4_1.18.2 ask` (once per family).
 - `-q` mode still pops GUI dialogs when a display is present (e.g. Board Project Options on
