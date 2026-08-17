@@ -1,32 +1,39 @@
 # stm32-projects — Context
 
 Embedded firmware workspace for the STM32 Nucleo-L476RG, driven entirely from the CLI.
+Since 2026-08-17 it hosts a single project: `microcontroller-embedded-c-programming`.
+
+**microcontroller-embedded-c-programming**:
+The one live project — a bare-metal (no HAL) register-level course project for the
+"Microcontroller Embedded C Programming" curriculum. Single `Src/main.c` overwritten per
+lesson; old lessons live in git history.
+_Avoid_: "the course project" in docs without naming it once first
+
+**Empty-project shape**:
+The ST VS Code extension's no-HAL project layout this project was seeded from: flat
+`Src/`+`Inc/`, `startup_stm32l476xx.S`, `syscall.c`, `sysmem.c`, own linker script,
+modular `cmake/` includes, user-editable sections in `CMakeLists.txt`.
+_Avoid_: "CubeMX project" — no `.ioc`, CubeMX is not in the loop
 
 **CubeCLT**:
 ST's official command-line toolset (compiler, programmer CLI, GDB server, CMake/Ninja) — the build/flash/debug backbone of this workspace.
 _Avoid_: "the toolchain", "CubeIDE tools"
 
 **Headless CubeMX**:
-Standalone STM32CubeMX driven by a `-q <script>` command file to create and regenerate projects without the GUI.
+Standalone STM32CubeMX driven by a `-q <script>` command file. Not used by the current
+project; kept documented (docs/cli-workflow.md) for future HAL projects.
 _Avoid_: "CubeMX CLI mode", "quiet mode"
 
 **Firmware pack**:
-An STM32Cube HAL/CMSIS bundle (e.g. `STM32Cube_FW_L4`) that CubeMX copies from `~/STM32Cube/Repository/` into generated projects. Must be installed via `swmgr` before generation works.
+An STM32Cube HAL/CMSIS bundle in `~/STM32Cube/Repository/` (here `STM32Cube_FW_L4_V1.18.2`).
+The current project uses only its CMSIS headers (`stm32l476xx.h`, `core_cm4.h`) via include
+paths in `CMakeLists.txt` — no HAL sources compiled.
 _Avoid_: "SDK", "HAL download"
-
-**cli-test**:
-The reference CubeMX-generated CMake project; proves the generate → build → flash loop and blinks LD2 at 2.5 Hz as a known-good signal source.
-
-**Legacy projects**:
-`testing-target/` and `testing-host/` — Eclipse-managed CubeIDE projects with no standalone Makefile; buildable only through CubeIDE until migrated.
-_Avoid_: treating them as part of the CMake flow
 
 **LA2016**:
 The Kingst 16-channel logic analyzer on this bench (KingstVIS software); validates firmware behavior independently of the code.
 
 **B1**:
-The Nucleo's blue user push-button on PC13. Pressing pulls the line **low** (active-low); the board's default CubeMX config maps it to EXTI line 13.
-_Avoid_: "the button" without naming which, "PC13 switch"
-
-**button-exti**:
-The EXTI lesson project: B1 press → EXTI15_10 interrupt → LD2 toggle + press-counter line on the VCP, first raw (bounce visible), then tick-debounced.
+The Nucleo's blue user push-button on PC13. Pressing pulls the line **low** (active-low).
+Note it has a 100nF cap — visible bounce is largely filtered.
+_Avoid_: "the button" without naming which, "PC13 switch"; confusing it with the black RESET button
