@@ -1,5 +1,5 @@
 loadboard NUCLEO-L476RG allmodes
-project name hello-world
+project name button-exti
 project toolchain CMake
 project path /home/dev/projects/stm32-projects
 project generate
