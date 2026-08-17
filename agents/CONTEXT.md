@@ -1,12 +1,13 @@
 # stm32-projects — Context
 
 Embedded firmware workspace for the STM32 Nucleo-L476RG, driven entirely from the CLI.
-Since 2026-08-17 it hosts a single project: `microcontroller-embedded-c-programming`.
+Reset on 2026-08-17: one directory per online-course project, each self-contained with
+its own Makefile (no workspace-level build plumbing).
 
 **microcontroller-embedded-c-programming**:
-The one live project — a bare-metal (no HAL) register-level course project for the
-"Microcontroller Embedded C Programming" curriculum. Single `Src/main.c` overwritten per
-lesson; old lessons live in git history.
+The first course project — bare-metal (no HAL) register-level, for the "Microcontroller
+Embedded C Programming" curriculum. Single `Src/main.c` overwritten per lesson; old
+lessons live in git history.
 _Avoid_: "the course project" in docs without naming it once first
 
 **Empty-project shape**:

@@ -1,9 +1,10 @@
 # stm32-projects
 
 STM32 workspace for the Nucleo-L476RG, CLI-first: CubeCLT builds, flashes, and debugs —
-no IDE in the loop. Hosts a single project, `microcontroller-embedded-c-programming/`:
-a bare-metal (no HAL) register-level project for the "Microcontroller Embedded C
-Programming" course. One `Src/main.c`, overwritten per lesson; git history is the archive.
+no IDE in the loop. Hosts one directory per online-course project, each self-contained
+with its own Makefile. Current: `microcontroller-embedded-c-programming/` — a bare-metal
+(no HAL) register-level project for the "Microcontroller Embedded C Programming" course.
+One `Src/main.c`, overwritten per lesson; git history is the archive.
 
 ## Stack
 
@@ -14,7 +15,7 @@ Programming" course. One `Src/main.c`, overwritten per lesson; git history is th
 
 ## Run & test
 
-`make` works from the repo root (forwards to the project) or from the project dir:
+Each project carries its own Makefile — `cd` into the project dir and:
 
 | Command | Does |
 |---|---|

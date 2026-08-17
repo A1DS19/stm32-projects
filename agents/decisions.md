@@ -35,3 +35,9 @@ Sub-decisions:
   FPU registers and hard-faults without CP10/CP11 access. `Src/system.c` owns this.
   (Found on hardware: banner printed — GCC folds no-arg printf to puts — but the first
   `%lu` printf died in the default handler.)
+
+## 2026-08-17 — Makefiles are per-project, no root forwarding
+
+The workspace will hold multiple online-course projects over time, so each project dir
+carries its own Makefile and the root stays free of build plumbing. The initial root
+forwarding Makefile (hardcoded to one project) was removed the same day it was added.

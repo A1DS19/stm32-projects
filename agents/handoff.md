@@ -14,14 +14,15 @@ _2026-08-17 (workspace reset session)_
   startup's `SystemInit` is a weak empty stub — first `printf("%lu")` hard-faulted in
   newlib `vfprintf` (banner survived: GCC folds no-arg printf to puts). Fix:
   `Src/system.c` `SystemInit` enables CP10/CP11. Recorded in agents/decisions.md.
-- Makefile targets now work from repo root (forwarding Makefile) and project dir;
-  root `.vscode/` retargeted to the new project.
+- Makefile is per-project (workspace will hold multiple course projects — user
+  decision; the initial root forwarding Makefile was removed). Root `.vscode/`
+  retargeted to the new project.
 
 ## State
 - Branch `feat/course-reset` (3 commits ahead of local main), unpushed. Merge/PR is the
   user's call.
-- Untracked leftovers the user chose to delete manually: `test-ext/` (its skeleton lives
-  on inside the new project) — root `.settings/` may also linger (git-ignored).
+- `test-ext/` deleted by the user (its skeleton lives on inside the new project); root
+  `.settings/` still lingers (git-ignored, harmless).
 - `.vscode/launch.json` carries an auto-added "C/C++ Runner: Debug Session" config
   pointing at deleted `test-ext` paths — stale, remove when convenient.
 - Board: healthy, running lesson zero (banner + blink counter on VCP). Serial = the
