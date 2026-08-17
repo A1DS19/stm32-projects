@@ -23,3 +23,10 @@ _Avoid_: treating them as part of the CMake flow
 
 **LA2016**:
 The Kingst 16-channel logic analyzer on this bench (KingstVIS software); validates firmware behavior independently of the code.
+
+**B1**:
+The Nucleo's blue user push-button on PC13. Pressing pulls the line **low** (active-low); the board's default CubeMX config maps it to EXTI line 13.
+_Avoid_: "the button" without naming which, "PC13 switch"
+
+**button-exti**:
+The EXTI lesson project: B1 press → EXTI15_10 interrupt → LD2 toggle + press-counter line on the VCP, first raw (bounce visible), then tick-debounced.
