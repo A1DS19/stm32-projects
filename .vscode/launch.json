@@ -2,14 +2,38 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Debug microcontroller-embedded-c-programming (ST-LINK)",
+      "type": "cortex-debug",
+      "request": "launch",
+      "servertype": "stlink",
+      "cwd": "${workspaceFolder}/microcontroller-embedded-c-programming",
+      "executable": "${workspaceFolder}/microcontroller-embedded-c-programming/build/Debug/microcontroller-embedded-c-programming.elf",
+      "device": "STM32L476RG",
+      "interface": "swd",
+      "runToEntryPoint": "main",
+      "svdFile": "/opt/st/stm32cubeclt_1.22.0/STMicroelectronics_CMSIS_SVD/STM32L476.svd",
+      "preLaunchTask": "build microcontroller-embedded-c-programming"
+    },
+    {
+      "name": "Attach microcontroller-embedded-c-programming (running board)",
+      "type": "cortex-debug",
+      "request": "attach",
+      "servertype": "stlink",
+      "cwd": "${workspaceFolder}/microcontroller-embedded-c-programming",
+      "executable": "${workspaceFolder}/microcontroller-embedded-c-programming/build/Debug/microcontroller-embedded-c-programming.elf",
+      "device": "STM32L476RG",
+      "interface": "swd",
+      "svdFile": "/opt/st/stm32cubeclt_1.22.0/STMicroelectronics_CMSIS_SVD/STM32L476.svd"
+    },
+    {
       "name": "C/C++ Runner: Debug Session",
       "type": "cppdbg",
       "request": "launch",
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/home/dev/projects/stm32-projects/cli-test/Src",
-      "program": "/home/dev/projects/stm32-projects/cli-test/Src/build/Debug/outDebug",
+      "cwd": "/home/dev/projects/stm32-projects/test-ext/Src",
+      "program": "/home/dev/projects/stm32-projects/test-ext/Src/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
