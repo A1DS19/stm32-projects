@@ -1,0 +1,51 @@
+# Course progression
+
+Learning path for embedded firmware, anchored on the FastBit STM32 track. One workspace
+project directory per course (per-project Makefile). Update the status column as courses
+advance; move finished ones to the log at the bottom.
+
+## Main path (in order)
+
+| # | Course | Status | Project dir |
+|---|--------|--------|-------------|
+| 1 | Microcontroller Embedded C Programming: Absolute Beginners (FastBit) | **34% — in progress** | `microcontroller-embedded-c-programming/` |
+| 2 | Embedded Systems Programming on ARM Cortex-M3/M4 Processor (FastBit) | 2% | — |
+| 3 | Mastering Microcontroller and Embedded Driver Development — MCU1 (FastBit) | 1% | — |
+| 4 | Mastering Microcontroller: Timers, PWM, CAN, Low Power — MCU2 (FastBit) | 1% | — |
+| 5 | ARM Cortex M Microcontroller DMA Programming Demystified (FastBit) | 1% | — |
+| 6 | Mastering RTOS: Hands on FreeRTOS and STM32Fx with Debugging (FastBit) | 2% | — |
+| 7 | STM32Fx Microcontroller Custom Bootloader Development (FastBit) | 1% | — |
+
+Why this order: C fundamentals → the Cortex-M4 core itself (exceptions, NVIC, stack,
+faults — the machinery behind the hard-fault/FPU issues already met in lesson zero) →
+register-level peripheral drivers (the MODER/AFR pin-mux work, made systematic) → deeper
+peripherals → DMA → scheduler → bootloader. Steps 6 and 7 can swap by interest.
+
+Reference alongside step 3 (not a separate step): Communication Protocols: UART, USART,
+I2C, I3C, SPI, GPIO (Protocol Pro).
+
+## Hardware notes
+
+- Bench board: Nucleo-L476RG. FastBit videos use STM32F407 Discovery / Nucleo-F446 —
+  same Cortex-M4 core, slightly different peripheral versions; adapt via RM0351 instead
+  of copy-typing. That adaptation is a feature, not a bug.
+- MCU3 (LTDC/LCD-TFT/LVGL, owned, 3%) is the exception: the L476 has no LTDC. Needs an
+  F429/F7 Discovery board — park it until then.
+
+## Later / parallel tracks (owned)
+
+- **Zephyr RTOS w/ DeviceTree and Board Bring Up** (in cart) — buy and start only after
+  step 6 (FreeRTOS first makes DeviceTree/bring-up land better).
+- **Embedded Linux**: Embedded Linux Step by Step (BeagleBone Black, 1%) → Linux Device
+  Driver Programming LDD1 (1%). Own track, after the MCU path.
+- **Mastering Embedded Rust** (FastBit) — after MCU1/MCU2; same concepts, new language.
+- **Advanced Embedded Software with STM32, FreeRTOS & Modbus** — after step 6.
+- **PCB/hardware**: KiCad Advanced smart USB thumb drive (4%), electronics design
+  courses — parallel to the drone-flight-controller PCB work, independent of this path.
+- **FPGA/Verilog series** (cart) — separate discipline; decide later, not part of this path.
+
+## Completed
+
+| Course | Finished | Notes |
+|--------|----------|-------|
+| Curso diseño PCB: Controlador de vuelo para drones Arduino | 2026 (before 2026-08-17) | Fed the drone-flight-controller project |
