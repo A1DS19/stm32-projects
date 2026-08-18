@@ -32,6 +32,16 @@ I2C, I3C, SPI, GPIO (Protocol Pro).
 - MCU3 (LTDC/LCD-TFT/LVGL, owned, 3%) is the exception: the L476 has no LTDC. Needs an
   F429/F7 Discovery board — park it until then.
 
+## Applied projects (unlocked after MCU1)
+
+Not foundation steps — project courses that apply the driver skills from step 3:
+
+- **Embedded Ethernet on STM32 Using W5500** — W5500 is an external SPI TCP/IP chip;
+  ideal first post-MCU1 project. Runs fully on the L476RG + a cheap W5500 module.
+- **Bluetooth Low Energy (BLE) From Ground Up** — protocol-focused, self-contained
+  (GAP/GATT/advertising). L476 has no radio: needs the course's BLE board/module,
+  which is driven over UART/SPI. Independent of MCU2/DMA/RTOS.
+
 ## Later / parallel tracks (owned)
 
 - **Zephyr RTOS w/ DeviceTree and Board Bring Up** (in cart) — buy and start only after
