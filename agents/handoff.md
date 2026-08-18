@@ -1,34 +1,36 @@
 # Where we left off
-_2026-08-17 (workspace reset session)_
+_2026-08-17 (evening — post-reset session wrap-up)_
 
 ## This session
-- **Workspace reset**: all old projects deleted (`cli-test`, `hello-world`, `button-exti`,
-  `testing-target`, `testing-host`, root Eclipse files, `gen.txt`) in favor of a single
-  bare-metal course project `microcontroller-embedded-c-programming/` for the
-  register-level "Microcontroller Embedded C Programming" course. Branch
-  `feat/course-reset`, three commits (scaffold / deletions / docs), not merged or pushed.
-- **New project verified on hardware**: seeded from `test-ext`'s empty-project shape,
-  renamed; CMSIS headers from the L4 pack via include paths; `make build flash` +
-  `blink N` lines observed on the VCP; LD2 blinking via RCC/GPIOA registers.
-- **FPU gotcha found the hard way**: ST's empty-project cmake compiles hard-float but the
-  startup's `SystemInit` is a weak empty stub — first `printf("%lu")` hard-faulted in
-  newlib `vfprintf` (banner survived: GCC folds no-arg printf to puts). Fix:
-  `Src/system.c` `SystemInit` enables CP10/CP11. Recorded in agents/decisions.md.
-- Makefile is per-project (workspace will hold multiple course projects — user
-  decision; the initial root forwarding Makefile was removed). Root `.vscode/`
-  retargeted to the new project.
+- **Workspace reset landed on main**: `feat/course-reset` merged (`da9ad23`), pushed, and
+  both stale branches (`feat/course-reset`, `feat/button-exti`) deleted. Workspace is now
+  one-directory-per-course; `microcontroller-embedded-c-programming/` is the only project.
+  Per-project Makefiles (user decision — no root build plumbing; recorded in decisions.md).
+- **Reference docs stocked in `docs/`** (all committed + pushed):
+  RM0351 Rev 9 + UM1724 Rev 14 (st.com blocks CLI downloads — TLS fingerprint; fetched
+  via UMaine/Purdue university mirrors), six per-peripheral Nucleo-L476RG pinout diagrams
+  from stm32python.gitlab.io (visually verified against DS10198 AF tables + UM1724 before
+  committing), `course-progression.md` (FastBit path tracker), and a repo-root README.
+- **Course context established**: user is 34% through FastBit's Embedded C course; path is
+  C → Cortex-M3/M4 → MCU1 → MCU2 → DMA → FreeRTOS → Bootloader, with W5500/BLE as
+  post-MCU1 applied projects and MCU3 parked (L476 has no LTDC). Lesson topics this
+  session: bit set/clear/toggle idioms (`reg &= ~(7U << 4)`), the `U` suffix, and the
+  GPIO pin-mux (MODER + AFR, AF tables) — the user now connects CubeMX's pin dropdown to
+  the registers underneath.
 
 ## State
-- Branch `feat/course-reset` (3 commits ahead of local main), unpushed. Merge/PR is the
-  user's call.
-- `test-ext/` deleted by the user (its skeleton lives on inside the new project); root
-  `.settings/` still lingers (git-ignored, harmless).
-- `.vscode/launch.json` carries an auto-added "C/C++ Runner: Debug Session" config
-  pointing at deleted `test-ext` paths — stale, remove when convenient.
-- Board: healthy, running lesson zero (banner + blink counter on VCP). Serial = the
-  ttyACM with `ID_MODEL=STM32_STLink` (ttyACM0 is the Turing USB monitor).
+- `main` at `a9f5c9d`, clean, even with origin. Only branch.
+- Board: healthy, running lesson zero (banner + blink counter on VCP at 115200;
+  serial = the ttyACM with `ID_MODEL=STM32_STLink`, usually ttyACM1).
+- `tio` exit reminder the user asked about: `Ctrl-t q`.
+- Direct-to-main commits became this session's accepted pattern for small docs changes
+  (user declined the branch-restore fix and kept pushing main).
 
 ## Next session
-1. Merge `feat/course-reset` (user decision), delete `test-ext/` manually.
-2. First real course lessons in `Src/main.c` (data types / bitwise ops on live registers).
-3. Still open from bring-up era: printf decoded in KingstVIS off PA2.
+1. Continue the Embedded C course in `Src/main.c` — next lessons are bitwise ops on live
+   registers, which dovetails with the pin-mux discussion; use the pinout diagrams +
+   RM0351 now in `docs/`.
+2. Update `docs/course-progression.md` statuses as lessons/courses advance.
+3. Nothing pending or broken; root `.settings/` still lingers untracked (harmless), and
+   `.vscode/launch.json` still carries the stale C/C++ Runner entry pointing at deleted
+   `test-ext` paths — remove when convenient.
