@@ -1,11 +1,12 @@
-/* Lesson: modeling data with structs — a car per Src/car.c.
- * Unit/range-driven type choices, enum name codes, VIN as text. */
+/* Lesson: bit-fields & unions — see Src/bitfield.c.
+ * Slices, truncation, byte views/endianness, and a GPIO bit-field overlay
+ * (with the reasons CMSIS refuses to do this). Output on `make serial`. */
 
-#include "car.h"
+#include "bitfield.h"
 
 int main(void)
 {
-  playing_with_car();
+  playing_with_bitfield();
 
   for (;;) {
   }

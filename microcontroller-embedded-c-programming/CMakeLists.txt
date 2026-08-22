@@ -37,6 +37,7 @@ target_sources(${PROJECT_NAME} PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/isr.c
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/struct.c
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/car.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/Src/bitfield.c
 )
 
 # These lessons need real optimization or their volatile points are moot; -O2
