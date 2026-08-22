@@ -1,11 +1,11 @@
-/* Lesson: structs — padding, bit-fields, and memory-mapped register maps.
- * See Src/struct.c; all output on `make serial` (LD2 blinks 3x as proof). */
+/* Lesson: modeling data with structs — a car per Src/car.c.
+ * Unit/range-driven type choices, enum name codes, VIN as text. */
 
-#include "struct.h"
+#include "car.h"
 
 int main(void)
 {
-  playing_with_struct();
+  playing_with_car();
 
   for (;;) {
   }
