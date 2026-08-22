@@ -34,11 +34,14 @@ target_sources(${PROJECT_NAME} PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/system.c
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/uart2.c
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/volatile.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/Src/isr.c
 )
 
-# The volatile lesson needs real optimization to show the bug; -O2 lands after
-# the Debug -O0 on the command line, and the last -O flag wins.
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/Src/volatile.c
+# These lessons need real optimization or their volatile points are moot; -O2
+# lands after the Debug -O0 on the command line, and the last -O flag wins.
+set_source_files_properties(
+  ${CMAKE_CURRENT_SOURCE_DIR}/Src/volatile.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/Src/isr.c
   PROPERTIES COMPILE_OPTIONS "-O2")
 
 # CMSIS headers from the installed Cube firmware pack — register structs, no HAL sources
