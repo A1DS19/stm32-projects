@@ -26,8 +26,9 @@
  * volatile. (This file is compiled -O2 like volatile.c, so deleting a
  * volatile below really does break it — try it.)
  *
- * Demo: LD2 toggles every 2 s. Each press of blue B1 makes the blink 10x
- * faster; past the 100 ms floor it resets to 2 s. So: 2000 -> 200 -> 2000...
+ * Demo: LD2 toggles every 2 s. Each press of blue B1 doubles the blink
+ * speed; past the 100 ms floor it resets to 2 s. So:
+ * 2000 -> 1000 -> 500 -> 250 -> 125 -> 2000 -> ...
  */
 
 #include "isr.h"
@@ -39,7 +40,7 @@
 #define CPU_HZ 4000000u /* MSI reset default, SystemInit leaves it alone */
 
 #define BLINK_START_MS 2000u
-#define SPEEDUP 10u     /* each press divides the interval by this */
+#define SPEEDUP 2u      /* each press divides the interval by this */
 #define BLINK_MIN_MS 100u
 
 /* Shared ISR <-> main data. Written in interrupt context, read in main:
