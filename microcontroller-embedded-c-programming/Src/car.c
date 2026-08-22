@@ -1,25 +1,28 @@
 /* Lesson: modeling real data with structs — a car.
  *
- * The design method: for each field, first pick the UNIT and the RANGE the
- * unit must cover, then the smallest type that fits with headroom.
+ * The method: for each field, first pick the UNIT and the RANGE that unit
+ * must cover, then choose the smallest type that fits with some headroom.
  *
- *   max speed  -> km/h fits uint8_t (0..255) for these cars. Know the edge:
- *                 a Chiron does 490 and would silently wrap. If the fleet
- *                 could ever include one, uint16_t is the honest choice.
- *   max revs   -> rpm needs 0..~9000, too big for uint8_t raw. Store a
- *                 SCALED unit: rpm/100 (75 -> 7500). Display multiplies
- *                 back. Why /100 and not /1000: a 7500 redline exists,
- *                 and thousands can only say 7000 or 8000.
- *   model name -> a small code into a predefined table — that is exactly
- *                 what enum + a string lookup array is for. Storing the
- *                 code costs 1 byte; the text lives once, in flash.
- *   vin        -> NOT a number. A real VIN is 17 alphanumeric characters
- *                 ("1HGES16564L012345"), so it's text: char[17+1] with the
- *                 terminating NUL. A uint16_t tops out at 65535 — five
- *                 digits — and no integer holds letters at all.
+ *   max speed  -> km/h fits uint8_t (0..255) for these cars. Know the
+ *                 limit: a Bugatti does 490 km/h and would wrap around to
+ *                 a wrong small number. If the data could ever include
+ *                 one, uint16_t is the honest choice.
+ *   max revs   -> rpm goes up to ~9000, too big for a raw uint8_t. So
+ *                 store a SCALED unit: rpm/100 (75 means 7500). The
+ *                 display multiplies back. Why /100 and not /1000: a
+ *                 7500 rpm redline exists, and thousands can only say
+ *                 7000 or 8000.
+ *   model name -> a small code that points into a fixed table — exactly
+ *                 what enum + an array of strings is for. The code costs
+ *                 1 byte per car; the text is stored once, in flash.
+ *   vin        -> NOT a number. A real VIN is 17 letters-and-digits
+ *                 ("1HGES16564L012345"), so it is text: char[17+1], the
+ *                 +1 for the NUL byte that ends every C string. A
+ *                 uint16_t stops at 65535 — five digits — and no integer
+ *                 type can hold letters at all.
  *
- * Bonus layout note (last lesson): every member here has alignment 1, so
- * this struct has ZERO padding in any order — sizeof == sum of members. */
+ * Layout note (last lesson): every member here is 1 byte wide, so there
+ * is ZERO padding whatever the order — sizeof = sum of the members. */
 
 #include "car.h"
 #include "uart2.h"
@@ -41,14 +44,14 @@ static const char *const model_names[MODEL_COUNT] = {
 };
 
 struct car {
-  char vin[18];            /* 17 chars + NUL */
+  char vin[18];            /* 17 chars + the ending NUL */
   uint8_t max_speed_kmh;   /* km/h, honest range 0..255 */
   uint8_t max_revs_100rpm; /* rpm / 100: 66 means 6600 rpm */
   uint8_t model;           /* enum car_model, kept to one byte */
 };
 
-/* Structs are passed to functions by POINTER (4 bytes) — passing by value
- * would copy all 21 bytes every call; const promises we only read. */
+/* Pass structs to functions by POINTER (4 bytes), not by value — by
+ * value would copy all 21 bytes on every call. const says: read only. */
 static void print_car(const struct car *c)
 {
   printf("  %-11s  VIN %s  top %u km/h  redline %u rpm (stored: %u)\r\n",

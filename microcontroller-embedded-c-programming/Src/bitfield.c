@@ -1,22 +1,22 @@
 /* Lesson: bit-fields & unions, the full story.
  *
- * A bit-field is a named slice of an integer: `uint32_t sample : 12` IS
- * "bits [x+11:x] of the word", and every read/write of it compiles to the
- * shift-and-mask you'd otherwise write by hand (section 2 proves they're
- * identical). Always declare them unsigned: a plain `int flag : 1` holds
- * 0 and -1, not 0 and 1.
+ * A bit-field is a named slice of an integer. `uint32_t len : 10` means
+ * "10 bits of the word", and every read or write of it compiles into the
+ * same shift-and-mask you could write by hand (section 2 proves it).
+ * Always declare them unsigned: a plain `int flag : 1` can hold 0 and
+ * -1, not 0 and 1.
  *
- * A union is overlapping storage: all members start at offset 0 and share
- * the bytes; sizeof = the largest member. Reading a different member than
- * you last wrote reinterprets the same bytes (legal in C, and the idiom
- * embedded lives by): word-view of packed fields, byte-view of a word for
- * UART/CAN transmission — which also exposes the CPU's endianness.
+ * A union is one box of bytes with several names on it. All members
+ * start at offset 0 and SHARE the same storage; sizeof = the largest
+ * member. Write through one name, read through another, and you see the
+ * same bytes reinterpreted. Embedded code uses this constantly: a
+ * word-view of packed fields, or a byte-view of a word to send it over
+ * UART/CAN — which also reveals the CPU's byte order (endianness).
  *
- * Section 4 does what CMSIS deliberately doesn't: overlays bit-fields on a
- * live GPIO register and blinks the LED by assigning to a 1-bit name. It
- * works — and the comments there spell out the three reasons production
- * register code still uses masks (RMW hazard, layout portability, access
- * width), so you know exactly what you're trading. */
+ * Section 4 does what CMSIS on purpose does not: it lays bit-field names
+ * over a live GPIO register and blinks the LED by assigning to a 1-bit
+ * name. It works — and the comments there give the three reasons real
+ * register code still uses masks, so you know the trade. */
 
 #include "bitfield.h"
 #include "stm32l476xx.h"
@@ -26,6 +26,13 @@
 
 /* --- sections 1 & 2: slices in RAM ---------------------------------- */
 
+/* One 4-byte box, two names for its contents:
+ *   .f    = the labeled view — each member is a named slice of the bits
+ *   .word = the unlabeled view — all 32 bits as one plain integer
+ * These are NOT two variables. There is one storage; writing through
+ * either name changes what the other name reads, instantly. Use .f when
+ * you care about one field, .word when you handle the whole thing at
+ * once: copy it, clear it, compare it, print it, send it. */
 union packet {
   struct {
     uint32_t addr : 5;    /* bits [4:0]  : 0..31   */
@@ -40,13 +47,14 @@ union packet {
 
 union word_bytes {
   uint32_t value;
-  uint8_t bytes[4]; /* same 4 bytes, addressable one at a time */
+  uint8_t bytes[4]; /* the same 4 bytes, reachable one at a time */
 };
 
 /* --- section 4: register overlay ------------------------------------ */
 
-/* MODER is sixteen 2-bit slices; we only name what we use. The container
- * must stay volatile — the union changes the NAMES, not lesson 1's rules. */
+/* MODER holds sixteen 2-bit slices, one per pin; we name only the ones
+ * we use. The pointer must stay volatile — the union changes the NAMES
+ * on the register, not lesson 1's rules. */
 typedef union {
   struct {
     uint32_t pin0 : 2, pin1 : 2, pin2 : 2, pin3 : 2, pin4 : 2, pin5 : 2;
@@ -78,18 +86,21 @@ void playing_with_bitfield(void)
 
   printf("\r\n== bit-fields & unions ==\r\n");
 
-  /* 1) a slice can only hold its width: extra high bits are dropped. */
+  /* 1) a slice can only hold as many bits as it is wide — the extra
+   * high bits are simply dropped. */
   printf("1) truncation\r\n");
   union packet p = {.word = 0};
-  /* via variables so the compiler can't warn at the assignment itself —
-   * with literals GCC flags the overflow, which is the lesson in itself */
+  /* through variables so the compiler can't warn at the assignment —
+   * with plain literals GCC flags the overflow at compile time, which
+   * is a lesson of its own */
   uint32_t nine = 9, twohundred = 200;
-  p.f.rw = nine;       /* 1-bit slice keeps 9 & 0x1 */
+  p.f.rw = nine;         /* 1-bit slice keeps 9 & 0x1 */
   p.f.addr = twohundred; /* 5-bit slice keeps 200 & 0x1F = 8 */
   printf("   rw = 9  -> stored %lu;  addr = 200 -> stored %lu\r\n",
          (unsigned long)p.f.rw, (unsigned long)p.f.addr);
 
-  /* 2) bit-fields are compiled shift-and-mask — prove it by hand. */
+  /* 2) bit-fields ARE shift-and-mask — prove it by building the same
+   * word by hand. */
   printf("2) bit-field vs manual shift+mask\r\n");
   p.word = 0;
   p.f.addr = 19;
@@ -100,29 +111,33 @@ void playing_with_bitfield(void)
          (unsigned long)p.word, (unsigned long)manual,
          p.word == manual ? "identical" : "MISMATCH");
 
-  /* 3) byte view: how a word actually sits in memory. Little-endian ARM
-   * stores the LOW byte first — what a byte-at-a-time UART send emits. */
+  /* 3) byte view: how the word really sits in memory. Little-endian ARM
+   * stores the LOWEST byte first — the order a byte-by-byte UART send
+   * would put on the wire. */
   printf("3) union byte view of 0x12345678\r\n");
   union word_bytes w = {.value = 0x12345678};
   printf("   bytes[0..3] = %02x %02x %02x %02x -> little-endian\r\n",
          w.bytes[0], w.bytes[1], w.bytes[2], w.bytes[3]);
 
-  /* 4) the forbidden fruit: bit-fields on a live register. */
+  /* 4) bit-field names over a live register. */
   printf("4) GPIO through bit-field names\r\n");
   RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN;
 
-  /* One assignment writes the 2-bit slice: 01 = output. What it compiles
-   * to is LDR whole MODER, mask, ORR, STR whole MODER — a hidden
-   * read-modify-write of all 16 pins' modes. That expansion is why this
-   * style is fine to *understand* and risky to *ship*:
-   *   - not atomic: an ISR flipping another pin's bit between the LDR and
-   *     STR gets overwritten (the isr.c lesson's BSRR exists for this)
-   *   - on write-1-to-clear registers it's destructive: `pr.pif13 = 1` on
-   *     EXTI->PR1 would read every pending line back and ack them ALL —
-   *     the exact |= bug the ISR lesson warns about, dressed up nicer
-   *   - which bit each field lands on, and the bus access width used,
-   *     are the compiler's choice, not yours — CMSIS masks make both
-   *     explicit and portable */
+  /* One assignment writes the 2-bit slice: 01 = output. But look at
+   * what it compiles into: read the WHOLE 32-bit MODER, change 2 bits,
+   * write the WHOLE register back — a hidden read-modify-write. That
+   * expansion is why this style is good to understand and risky to
+   * ship:
+   *   - not atomic: if an interrupt changes another pin's bits between
+   *     the read and the write-back, that change is overwritten — lost
+   *     (this is why BSRR exists, see the struct lesson)
+   *   - on write-1-to-clear registers it is destructive: `pr.pif13 = 1`
+   *     on EXTI->PR1 would read ALL the pending flags back and
+   *     acknowledge every one of them — the exact |= bug the ISR lesson
+   *     warns about, in nicer clothes
+   *   - the compiler decides which bit each field lands on and how wide
+   *     the bus access is — not you. CMSIS masks state both explicitly,
+   *     the same on every compiler. */
   MODER_A->f.pin5 = 1;
   printf("   moder.pin5 = 1 -> CMSIS reads MODER[11:10] = %lu\r\n",
          (unsigned long)((GPIOA->MODER >> 10) & 3u));

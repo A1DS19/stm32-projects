@@ -1,27 +1,30 @@
 /* Lesson: structs — from memory layout to memory-mapped peripherals.
  *
- * A struct is a layout contract: members sit at increasing offsets, and the
- * compiler inserts PADDING so each member lands on its natural alignment
- * (a uint32_t on an address divisible by 4, uint16_t by 2...). Aligned
- * accesses are what the bus does in one cycle; the padding buys speed with
- * wasted bytes. Rules of thumb shown below:
- *   - member order matters: worst-first ordering can nearly double sizeof
- *   - sizeof is also rounded up to the widest alignment (arrays must tile)
- *   - __attribute__((packed)) removes padding — pay with unaligned access
+ * A struct is a layout contract: members sit one after another at growing
+ * offsets. The compiler also inserts invisible filler bytes, called
+ * PADDING, so each member starts at an address it likes: a uint32_t on a
+ * multiple of 4, a uint16_t on a multiple of 2. That is "natural
+ * alignment" — the memory bus can fetch an aligned value in one go, so
+ * padding trades wasted bytes for fast access. Shown below:
+ *   - member order matters: a bad order can nearly double sizeof
+ *   - sizeof is also rounded up so arrays of the struct stay aligned
+ *   - __attribute__((packed)) removes the padding — and the speed with it
  *
- * Bit-fields carve a member into sub-byte slices — great for squeezing a
- * protocol packet or config blob into RAM. But WHICH bit each field lands in
- * is implementation-defined, so CMSIS never uses them for registers: real
- * register code uses masks and shifts (GPIO_MODER_MODE5_0 & friends).
+ * Bit-fields carve an integer into named slices a few bits wide — good
+ * for squeezing a message or a settings blob into little RAM. But the C
+ * standard does not fix WHICH bit each slice lands on (compilers may
+ * differ), so CMSIS never uses them for registers: register code uses
+ * masks and shifts (GPIO_MODER_MODE5_0 and friends) instead.
  *
- * The embedded payoff: point a struct at a hardware address and every member
- * becomes a register. That is the whole trick behind CMSIS —
+ * The embedded payoff: point a struct at a hardware address and every
+ * member becomes a register. That is the whole trick behind CMSIS —
  *   #define GPIOA ((GPIO_TypeDef *) 0x48000000)
- * GPIO_TypeDef is only uint32_t members (no padding possible, offsets match
- * the reference manual table exactly), each declared __IO = volatile
- * (lesson 1!). Below we roll our own mini GPIO_TypeDef, verify member
- * offsets against CMSIS, and blink LD2 through it — writes go through OUR
- * struct, read-back through CMSIS, proving both name the same silicon. */
+ * GPIO_TypeDef has only uint32_t members, so no padding is possible and
+ * each member's offset matches the reference manual table exactly. Every
+ * member is __IO, which is just volatile (lesson 1!). Below we build our
+ * own mini GPIO_TypeDef, check its offsets against CMSIS, and blink LD2
+ * with it — writes go through OUR struct, read-back through CMSIS, which
+ * proves both names point at the same silicon. */
 
 #include "struct.h"
 #include "stm32l476xx.h"
@@ -33,20 +36,20 @@
 /* --- 1) padding ---------------------------------------------------- */
 
 struct naive_order {
-  uint8_t flag;   /* offset 0 — compiler pads 3 bytes so count aligns */
+  uint8_t flag;   /* offset 0 — 3 filler bytes follow so count can align */
   uint32_t count; /* offset 4 */
-  uint16_t id;    /* offset 8 — 2 tail pad bytes round sizeof to 12 */
+  uint16_t id;    /* offset 8 — 2 filler bytes at the end round sizeof to 12 */
 };
 
-struct sorted_order { /* same members, widest first: no gaps, tail pad 1 */
+struct sorted_order { /* same members, widest first: no gaps, 1 end filler */
   uint32_t count;
   uint16_t id;
   uint8_t flag;
 };
 
-struct __attribute__((packed)) packed_order { /* no padding at all */
+struct __attribute__((packed)) packed_order { /* no filler at all */
   uint8_t flag;
-  uint32_t count; /* now at offset 1 — every access is unaligned */
+  uint32_t count; /* now at offset 1 — every access to it is unaligned */
   uint16_t id;
 };
 
@@ -58,22 +61,25 @@ union sensor_report {
     uint32_t channel : 3;   /* 0..7   */
     uint32_t overrun : 1;
     uint32_t sample : 12;   /* 0..4095 */
-    uint32_t reserved : 12; /* name the leftover bits, like RM tables do:
-                             * unnamed padding bits are UNINITIALIZED (we
-                             * watched 0x08 stack garbage land there) —
-                             * a named member zero-fills with {.f = ...} */
+    uint32_t reserved : 12; /* name the leftover bits, like the reference
+                             * manual does. Unnamed leftover bits are NOT
+                             * filled in by an initializer (we watched
+                             * 0x08 of stack garbage land there) — a
+                             * named member is set to zero. */
   } f;                      /* 20 bits used + 12 reserved = one uint32_t */
-  uint32_t word;            /* union: same bytes, second name — lets us
-                             * peek at the raw packed representation */
+  uint32_t word;            /* union: the same bytes under a second name —
+                             * lets us look at the raw packed value */
 };
 
 /* --- 3) a register map, hand-rolled --------------------------------- */
 
-/* Offsets straight from RM0351's GPIO register table. All members are
- * uint32_t: naturally aligned, so the compiler CANNOT pad — offset in the
- * struct == address offset in hardware. volatile is what CMSIS's __IO
- * expands to. (Real GPIO_TypeDef continues: LCKR, AFR[2] — yes, arrays
- * work in register structs too — and BRR; omitted, we don't use them.) */
+/* Offsets copied from the GPIO register table in RM0351 (the reference
+ * manual). All members are uint32_t, each naturally aligned, so the
+ * compiler CANNOT insert padding — the offset inside the struct equals
+ * the address offset in the hardware. volatile is what CMSIS's __IO
+ * expands to. (The real GPIO_TypeDef continues with LCKR, AFR[2] — yes,
+ * arrays work in register maps too — and BRR; left out, we don't use
+ * them here.) */
 struct my_gpio {
   volatile uint32_t MODER;   /* 0x00 */
   volatile uint32_t OTYPER;  /* 0x04 */
@@ -135,15 +141,18 @@ void playing_with_struct(void)
          (uintptr_t)&MY_GPIOA->ODR == (uintptr_t)&GPIOA->ODR ? "identical"
                                                              : "MISMATCH");
 
-  /* Blink LD2 entirely through the homemade struct; read the pin back
-   * through CMSIS. Clock gating stays CMSIS — RCC would be its own map. */
+  /* Blink LD2 using only the homemade struct; read the pin back through
+   * CMSIS. (The clock enable stays CMSIS: RCC would need a whole
+   * register map of its own.) */
   RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN;
   MY_GPIOA->MODER &= ~GPIO_MODER_MODE5;
   MY_GPIOA->MODER |= GPIO_MODER_MODE5_0;
 
   for (int i = 0; i < 3; i++) {
-    /* BSRR = Bit Set/Reset Register: write-only, low half sets pins, high
-     * half resets them — atomic, no read-modify-write like ODR needs. */
+    /* BSRR = Bit Set/Reset Register: write-only. A 1 in the low half
+     * sets that pin, a 1 in the high half clears it. One plain write —
+     * no need to read the old value, change it, and write it back the
+     * way ODR requires. */
     MY_GPIOA->BSRR = GPIO_BSRR_BS5;
     printf("   set via my struct   -> CMSIS reads IDR bit5 = %lu\r\n",
            (unsigned long)((GPIOA->IDR >> 5) & 1u));
