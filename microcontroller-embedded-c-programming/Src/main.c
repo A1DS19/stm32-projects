@@ -1,12 +1,11 @@
-/* Lesson: interrupts + volatile — see Src/isr.c for the full story.
- * LD2 toggles every 2 s; each B1 press doubles the speed (100 ms floor
- * resets to 2 s). Watch interval changes on `make serial`. */
+/* Lesson: structs — padding, bit-fields, and memory-mapped register maps.
+ * See Src/struct.c; all output on `make serial` (LD2 blinks 3x as proof). */
 
-#include "isr.h"
+#include "struct.h"
 
 int main(void)
 {
-  playing_with_isr();
+  playing_with_struct();
 
   for (;;) {
   }
