@@ -1,12 +1,12 @@
-/* Lesson: bit-fields & unions — see Src/bitfield.c.
- * Slices, truncation, byte views/endianness, and a GPIO bit-field overlay
- * (with the reasons CMSIS refuses to do this). Output on `make serial`. */
+/* Lesson: decode a 32-bit network packet typed in over the serial port.
+ * See Src/packet.c. Run `make serial`, type a hex value, read the fields.
+ * First lesson using UART receive (uart2_getc in Src/uart2.c). */
 
-#include "bitfield.h"
+#include "packet.h"
 
 int main(void)
 {
-  playing_with_bitfield();
+  playing_with_packet();
 
   for (;;) {
   }

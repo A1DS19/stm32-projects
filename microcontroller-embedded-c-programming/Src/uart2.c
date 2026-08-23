@@ -27,3 +27,17 @@ int __io_putchar(int ch)
   USART2->TDR = (uint8_t)ch;
   return ch;
 }
+
+/* Blocking receive: wait until a byte has arrived (RXNE = "receive register
+ * not empty"), then read it. Reading RDR also clears RXNE.
+ * If bytes ever arrived faster than we picked them up, the overrun flag (ORE)
+ * sets and reception stalls until it is cleared — clear it so input keeps
+ * working after a hiccup. */
+int uart2_getc(void)
+{
+  if (USART2->ISR & USART_ISR_ORE) {
+    USART2->ICR = USART_ICR_ORECF;
+  }
+  while (!(USART2->ISR & USART_ISR_RXNE)) {}
+  return (int)(USART2->RDR & 0xFFu);
+}

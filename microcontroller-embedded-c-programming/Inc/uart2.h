@@ -6,4 +6,7 @@
  * and uart2.c provides the strong __io_putchar. */
 void uart2_init(void);
 
+/* Blocking: waits for one received byte and returns it (0..255). */
+int uart2_getc(void);
+
 #endif
