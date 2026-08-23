@@ -8,8 +8,7 @@ advance; move finished ones to the log at the bottom.
 
 | # | Course | Status | Project dir |
 |---|--------|--------|-------------|
-| 1 | Microcontroller Embedded C Programming: Absolute Beginners (FastBit) | **34% — in progress** | `microcontroller-embedded-c-programming/` |
-| 2 | Embedded Systems Programming on ARM Cortex-M3/M4 Processor (FastBit) | 2% | — |
+| 2 | Embedded Systems Programming on ARM Cortex-M3/M4 Processor (FastBit) | **next up** | — |
 | 3 | Mastering Microcontroller and Embedded Driver Development — MCU1 (FastBit) | 1% | — |
 | 4 | Mastering Microcontroller: Timers, PWM, CAN, Low Power — MCU2 (FastBit) | 1% | — |
 | 5 | ARM Cortex M Microcontroller DMA Programming Demystified (FastBit) | 1% | — |
@@ -58,4 +57,5 @@ Not foundation steps — project courses that apply the driver skills from step 
 
 | Course | Finished | Notes |
 |--------|----------|-------|
+| Microcontroller Embedded C Programming: Absolute Beginners (FastBit) | 2026-08-22 | Step 1 of the main path. Register-level on the Nucleo-L476RG, no HAL; one lesson per file in `microcontroller-embedded-c-programming/` (main.c points at the current one, git is the archive). Bonus beyond the course: 4x4 keypad integration + MCU-as-continuity-tester (keydiag.c) |
 | Curso diseño PCB: Controlador de vuelo para drones Arduino | 2026 (before 2026-08-17) | Fed the drone-flight-controller project |
