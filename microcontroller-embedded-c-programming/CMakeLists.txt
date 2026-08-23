@@ -43,6 +43,7 @@ target_sources(${PROJECT_NAME} PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/ledtoggle.c
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/keypad.c
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/keydiag.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/Src/preproc.c
 )
 
 # These lessons need real optimization or their volatile points are moot; -O2
