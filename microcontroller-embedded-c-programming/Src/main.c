@@ -1,12 +1,11 @@
-/* Lesson: decode a 32-bit network packet typed in over the serial port.
- * See Src/packet.c. Run `make serial`, type a hex value, read the fields.
- * First lesson using UART receive (uart2_getc in Src/uart2.c). */
+/* Lesson: unions — overlap, float bits (IEEE-754), and tagged unions.
+ * See Src/union.c. Output on `make serial`. */
 
-#include "packet.h"
+#include "union.h"
 
 int main(void)
 {
-  playing_with_packet();
+  playing_with_union();
 
   for (;;) {
   }
