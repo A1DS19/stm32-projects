@@ -40,6 +40,7 @@ target_sources(${PROJECT_NAME} PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/bitfield.c
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/packet.c
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/union.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/Src/ledtoggle.c
 )
 
 # These lessons need real optimization or their volatile points are moot; -O2

@@ -1,11 +1,12 @@
-/* Lesson: unions — overlap, float bits (IEEE-754), and tagged unions.
- * See Src/union.c. Output on `make serial`. */
+/* Lesson: LED toggle through bit-field register structs — struct + union
+ * + bit-fields + volatile in one register map, checked by _Static_assert.
+ * See Src/ledtoggle.c. LD2 blinks; readbacks on `make serial`. */
 
-#include "union.h"
+#include "ledtoggle.h"
 
 int main(void)
 {
-  playing_with_union();
+  playing_with_ledtoggle();
 
   for (;;) {
   }
