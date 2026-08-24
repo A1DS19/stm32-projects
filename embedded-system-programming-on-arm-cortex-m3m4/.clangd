@@ -26,6 +26,9 @@ Diagnostics:
       readability-identifier-naming.ConstantCase: UPPER_CASE
       readability-identifier-naming.EnumConstantCase: UPPER_CASE
       readability-identifier-naming.MacroDefinitionCase: UPPER_CASE
+      # canonical short names: loop counters + the registers every ARM reader knows
+      readability-identifier-length.IgnoredVariableNames: ^(i|j|k|n|sp|pc|lr)$
+      readability-identifier-length.IgnoredParameterNames: ^(i|j|k|n|ch)$
 InlayHints:
   Enabled: true
   ParameterNames: true

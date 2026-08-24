@@ -106,3 +106,4 @@ third, most lesson-friendly view (programmer's model + register descriptions).
 | 2026-08-23 | Scaffold | Project cloned from the Embedded C course shape; banner verified on hardware |
 | 2026-08-23 | 2 (started): operation modes | Thread→handler→thread proven on hardware via NVIC STIR-pended IRQ 3, IPSR printed 0→19→0 |
 | 2026-08-23 | 2: access levels (PAL vs nPAL) | CONTROL.nPRIV drop → NVIC touch hard-faults; fault handler reads ISER0 fine (handler mode always privileged). Bonus: CONTROL=5 — FPCA set by hard-float printf |
+| 2026-08-23 | 2: core registers + mapped vs not | MOV/MRS snapshot printed (PC/LR in flash, SP in SRAM, PSP=0) vs pointer reads (CPUID/ISER0/AHB2ENR). Hardware lessons: MRS reads EPSR slice (T-bit) as 0; MSP snapshot sits one call-frame below SP |

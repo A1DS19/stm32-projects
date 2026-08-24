@@ -1,10 +1,10 @@
-/* Lesson: access levels — PAL vs nPAL; see Src/access.c. `make serial`.
- * Previous: Src/modes.c (thread vs handler mode). */
+/* Lesson: core registers + memory-mapped vs not; see Src/coreregs.c.
+ * `make serial`. Previous: access.c (PAL/nPAL), modes.c (thread/handler). */
 
-#include "access.h"
+#include "coreregs.h"
 
 int main(void) {
-    playing_with_access_levels();
+    playing_with_core_registers();
 
     for (;;) {}
 }
