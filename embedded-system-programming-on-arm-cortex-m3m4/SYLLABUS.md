@@ -62,7 +62,7 @@ third, most lesson-friendly view (programmer's model + register descriptions).
 - [x] **5. Bit-banding** (70–78) — alias addresses that turn one bit into one word;
   atomic bit writes without read-modify-write.
   *Exercise (s76): write 0xFF to 0x2000_0200, clear bit 7 both ways, compare.*
-- [ ] **6. Stack memory** (79–117) — MSP vs PSP, the four stack models (we use
+- [x] **6. Stack memory** (79–117) — MSP vs PSP, the four stack models (we use
   full-descending), switching thread mode to PSP, AAPCS (which registers a C function
   may trash, how arguments travel), stacking/unstacking on interrupt.
   *Exercise: instruction-level debugging of stack activity; change SP to PSP.*
@@ -114,3 +114,4 @@ third, most lesson-friendly view (programmer's model + register descriptions).
 | 2026-08-24 | side demo: 3461AS 7-segment | sevenseg.c — the register model made visible: 12 GPIO pins multiplex 4 digits (segments=GPIOB single BSRR write, commons=GPIOA), typed serial digits go RDR(APB1)→BSRR(AHB2)→photons. All wiring on silkscreened Arduino pins; SEVENSEG_COMMON_ANODE flag for a 3461BS |
 | 2026-08-24 | side demo: 128x32 SSD1306 OLED | oled.c + i2c3.c — the opposite of sevenseg: pixels belong to a controller chip OUTSIDE the map, reached through I2C3 (0x4000_5C00, PC0/PC1 = A5/A4, AF4, 100 kHz from 4 MHz). Probe-until-ACK loop = hot-wirable; NACK path verified electrically (address frames go out, STOPF lands). Framebuffer+5x7 font in our SRAM, shipped in 4 bursts |
 | 2026-08-24 | 5 done: bit-banding | s76 on &bucket, not raw 0x2000_0200 (demo reads it: holds our own .data — 0x200001f8 lives there). RMW clear vs one aliased store, both → 0x7F; alias reads return single bits; peripheral alias proven on USART2 CR1.UE (0x42088000 reads 1). GPIO out of reach (0x4800_0000 > bandable MB) → that's BSRR's job. Gotcha: TXE reads 0 right after printf (TDR still full) — pick deterministic bits for demos. **Section 5 complete** |
+| 2026-08-24 | 6 done: stack memory | stackmem.c — FD proven live (single asm PUSH probe: SP −4, [SP]=sentinel; replaces the IDE stepping exercise); naked MSR PSP + CONTROL.SPSEL switch (CONTROL 4→6, FPCA preserved); a local's address moves inside our 2K process_stack array; software-pended EXTI0 handler's local back in MSP territory + CONTROL reads SPSEL=0 in handler; AAPCS callee-saved proven with r4-pinned sentinel surviving printf. PSP=0-since-reset breadcrumb cashed. **Section 6 complete** |

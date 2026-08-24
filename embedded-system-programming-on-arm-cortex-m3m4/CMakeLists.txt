@@ -45,6 +45,7 @@ target_sources(${PROJECT_NAME} PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/i2c3.c
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/oled.c
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/bitband.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/Src/stackmem.c
 )
 
 # CMSIS headers from the installed Cube firmware pack — register structs, no HAL sources
