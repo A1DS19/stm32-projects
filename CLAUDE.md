@@ -5,8 +5,9 @@ no IDE in the loop. Hosts one directory per online-course project, each self-con
 with its own Makefile. Current: `embedded-system-programming-on-arm-cortex-m3m4/` — the
 Cortex-M4 processor course (modes, stack, NVIC, faults, scheduler capstone); course map in
 its `SYLLABUS.md`. Completed: `microcontroller-embedded-c-programming/` (Embedded C course).
-Both bare-metal (no HAL) register-level: one `Src/main.c` overwritten per lesson, git
-history is the archive.
+Both bare-metal (no HAL) register-level: each lesson in its own `Src/<lesson>.c` (+
+`Inc/` header), `main.c` is a thin dispatcher pointing at the current one, git history
+is the archive.
 
 ## Stack
 
