@@ -1,10 +1,10 @@
-/* Lesson: operation modes — thread vs handler mode; see Src/modes.c.
- * `make serial`. */
+/* Lesson: access levels — PAL vs nPAL; see Src/access.c. `make serial`.
+ * Previous: Src/modes.c (thread vs handler mode). */
 
-#include "modes.h"
+#include "access.h"
 
 int main(void) {
-    playing_with_modes();
+    playing_with_access_levels();
 
     for (;;) {}
 }
