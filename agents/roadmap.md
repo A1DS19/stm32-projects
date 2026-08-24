@@ -2,11 +2,22 @@
 
 ## Goal
 
-Work through the "Microcontroller Embedded C Programming" course on real hardware — every
-lesson written register-level in `microcontroller-embedded-c-programming/Src/main.c`,
-built/flashed/verified from the terminal on the Nucleo-L476RG.
+Work through the FastBit course path on real hardware — every lesson register-level,
+built/flashed/verified from the terminal on the Nucleo-L476RG. Current course:
+"Embedded System Programming on ARM Cortex-M3/M4" in
+`embedded-system-programming-on-arm-cortex-m3m4/` (course map: its `SYLLABUS.md`).
 
-## Milestones — course era
+## Milestones — Cortex-M processor course era
+
+- [x] Course project scaffolded (cloned from the Embedded C project shape) + 375-slide
+  deck distilled into `SYLLABUS.md`; banner/LED scaffold verified on hardware (2026-08-23)
+- [ ] Sections 1–6: modes, inline assembly, reset sequence, memory map, bit-banding, stack
+- [ ] Sections 7–9: NVIC, faults, SVC/PendSV
+- [ ] Capstone: round-robin task scheduler (needs the 4-LED substitute decision)
+- [ ] Sections 11–12: own startup file + linker script, OpenOCD, newlib
+- [ ] **COURSE COMPLETE** → run the course-finish ritual (docs/course-progression.md)
+
+## Milestones — Embedded C course era (complete)
 
 - [x] Workspace reset: old lesson projects deleted, single bare-metal project seeded from
   the empty-project shape, Makefile + VS Code debug wired (2026-08-17)

@@ -2,9 +2,11 @@
 
 STM32 workspace for the Nucleo-L476RG, CLI-first: CubeCLT builds, flashes, and debugs —
 no IDE in the loop. Hosts one directory per online-course project, each self-contained
-with its own Makefile. Current: `microcontroller-embedded-c-programming/` — a bare-metal
-(no HAL) register-level project for the "Microcontroller Embedded C Programming" course.
-One `Src/main.c`, overwritten per lesson; git history is the archive.
+with its own Makefile. Current: `embedded-system-programming-on-arm-cortex-m3m4/` — the
+Cortex-M4 processor course (modes, stack, NVIC, faults, scheduler capstone); course map in
+its `SYLLABUS.md`. Completed: `microcontroller-embedded-c-programming/` (Embedded C course).
+Both bare-metal (no HAL) register-level: one `Src/main.c` overwritten per lesson, git
+history is the archive.
 
 ## Stack
 

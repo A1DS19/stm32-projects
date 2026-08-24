@@ -1,0 +1,83 @@
+# Course map — Embedded System Programming on ARM Cortex-M3/M4 (FastBit)
+
+Distilled from the course slide deck (`slides.pdf`, 375 slides, 2024 edition — kept out
+of git, it's paid course material). Check sections off as they land; each lesson's code
+goes in `Src/` and git history is the archive, same as the last course.
+
+**The one-line pitch:** the previous course was about the C language on a
+microcontroller; this one is about the *processor itself* — the Cortex-M4 core that sits
+inside the STM32: its modes, stack, interrupt machinery, faults, and enough of that to
+build a working task scheduler from scratch, then the GNU toolchain underneath it all.
+
+## Hardware adaptation (read once)
+
+The course videos use an STM32F407 Discovery board; the bench board is the
+Nucleo-L476RG. Both are Cortex-M4 cores, so every *processor* topic (the bulk of this
+course) translates 1:1. Chip-side differences to remember:
+
+| Course assumes | On the L476RG |
+|---|---|
+| 16 MHz HSI clock at boot | 4 MHz MSI at boot — redo every SysTick/delay count |
+| 4 user LEDs (PD12–PD15) | 1 user LED (LD2, PA5) — scheduler lessons need 3 external LEDs on the breadboard, or printf task markers (decide when we get there) |
+| ITM/SWO printf in the IDE | `uart2_init()` + printf over the VCP, as always |
+| STM32F4 memory/peripheral addresses | Same layout class; check RM0351 for exact addresses |
+| Keil / CubeIDE | Our CLI flow (`make build flash serial`, F5 in VS Code) |
+
+Bit-banding, USART3, MSP/PSP, all faults, SVC, PendSV: present on the L476 — no gaps.
+
+## Sections
+
+- [ ] **1. Intro & motivation** (slides 1–31) — what the course covers; why Cortex-M.
+- [ ] **2. Operation modes, access levels, inline assembly** (32–48) — thread vs handler
+  mode, privileged vs unprivileged; CONTROL and the other non-memory-mapped core
+  registers; GCC inline assembly syntax (`asm volatile`, constraints).
+  *Exercise (s39): load 2 values from memory, add, store back — pure inline assembly.*
+- [ ] **3. Reset sequence** (49–53) — what the core does from power-up to `main`:
+  MSP fetch from address 0, reset handler, why the vector table starts with an SP value.
+- [ ] **4. Memory map & buses** (54–69) — the fixed 4 GB map (CODE/SRAM/peripheral/PPB
+  regions), AHB vs APB, the chip block diagram.
+- [ ] **5. Bit-banding** (70–78) — alias addresses that turn one bit into one word;
+  atomic bit writes without read-modify-write.
+  *Exercise (s76): write 0xFF to 0x2000_0200, clear bit 7 both ways, compare.*
+- [ ] **6. Stack memory** (79–117) — MSP vs PSP, the four stack models (we use
+  full-descending), switching thread mode to PSP, AAPCS (which registers a C function
+  may trash, how arguments travel), stacking/unstacking on interrupt.
+  *Exercise: instruction-level debugging of stack activity; change SP to PSP.*
+- [ ] **7. Interrupts & the NVIC** (118–157) — SCB, enabling faults and PendSV, the
+  steps to wire any MCU peripheral interrupt, priority values vs urgency, priority
+  grouping (pre-empt vs sub-priority), the 16 priority levels ST implements.
+  *Exercise (s128): enable and pend the USART3 interrupt from software.*
+  *Exercise (s154): interrupt priority configuration.*
+- [ ] **8. Exception entry/exit & faults** (158–202) — the exception stack frame,
+  EXC_RETURN magic values, hard/mem-manage/bus/usage faults and what raises each,
+  fault escalation, reading HFSR/CFSR/MMFAR/BFAR, `__attribute__((naked))` handlers
+  that pull the faulting PC out of the stacked frame.
+  *Exercise (s186): enable all configurable faults, then cause them on purpose —
+  undefined instruction, divide by zero, executing from the peripheral region.*
+- [ ] **9. SVC & PendSV** (203–220) — supervisor calls, extracting the SVC number from
+  the stacked PC, PendSV as the context-switch workhorse, interrupt offloading.
+  *Exercise (s211): SVC handler prints its number, returns number+4.*
+  *Exercise (s212): 4-operation calculator where the SVC number picks the operation.*
+- [ ] **10. Capstone: task scheduler** (221–276) — the big one. Four user tasks with
+  their own stacks, round-robin switching via SysTick + PendSV, dummy initial stack
+  frames, task control blocks, a blocking (delay) state, an idle task, a global tick
+  count. This is a hand-rolled miniature of what FreeRTOS does — the course's payoff.
+  *L476RG note: this is the 4-LED lesson block — plan the LED substitute before starting.*
+- [ ] **11. Bare-metal build with GNU tools** (277–344) — cross-compilation without an
+  IDE: compiler options, analyzing `.o` files with objdump, sections (.text/.data/.bss),
+  writing a startup file from scratch (vector table via attributes, weak/alias
+  handlers, copying .data to RAM, zeroing .bss), writing the linker script (MEMORY,
+  SECTIONS, location counter, linker symbols, ALIGN).
+  *Our own `startup_stm32l476xx.S` + `stm32l476xg_flash.ld` finally get demystified —
+  the lesson versions can live alongside and replace them in the build for a lesson.*
+- [ ] **12. OpenOCD, newlib & semihosting** (345–378) — downloading/debugging with
+  OpenOCD, newlib vs newlib-nano, the low-level syscalls printf needs, `--gc-sections`,
+  semihosting, `__libc_init_array`.
+  *Toolchain note: we flash with `STM32_Programmer_CLI` today; install OpenOCD when
+  this section starts to follow along.*
+
+## Progress
+
+| Date | Section | Notes |
+|---|---|---|
+| 2026-08-23 | Scaffold | Project cloned from the Embedded C course shape; banner verified on hardware |

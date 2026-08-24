@@ -36,6 +36,21 @@ Sub-decisions:
   (Found on hardware: banner printed — GCC folds no-arg printf to puts — but the first
   `%lu` printf died in the default handler.)
 
+## 2026-08-23 — Cortex-M course project cloned from the sibling, not regenerated
+
+`embedded-system-programming-on-arm-cortex-m3m4` was created by copying the proven
+scaffold of `microcontroller-embedded-c-programming` (startup, syscall/sysmem, system.c
+FPU enable, uart2 printf, linker script, cmake/, Makefile, .clangd, project .vscode)
+with only name changes, rather than generating a fresh empty project via the ST
+extension or CubeMX. Rationale: the sibling shape already encodes every hard-won fix
+(FPU/printf, serial-by-USB-identity, gdbserver `-d`), the course is the same bare-metal
+register-level style, and regeneration would reintroduce the weak-`SystemInit` trap.
+Sub-decisions:
+- **Course slides stay out of git** — `slides.pdf` is copied into the project for bench
+  reference but gitignored (paid FastBit material; the repo may be pushed).
+- **Course map lives in the project** (`SYLLABUS.md`), not in workspace `docs/` — it is
+  course-scoped, like the lesson code.
+
 ## 2026-08-17 — Makefiles are per-project, no root forwarding
 
 The workspace will hold multiple online-course projects over time, so each project dir

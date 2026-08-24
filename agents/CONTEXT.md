@@ -4,6 +4,13 @@ Embedded firmware workspace for the STM32 Nucleo-L476RG, driven entirely from th
 Reset on 2026-08-17: one directory per online-course project, each self-contained with
 its own Makefile (no workspace-level build plumbing).
 
+**embedded-system-programming-on-arm-cortex-m3m4**:
+The current course project (started 2026-08-23) — FastBit's Cortex-M3/M4 *processor*
+course: operation modes, stack (MSP/PSP), NVIC/faults, SVC/PendSV, a from-scratch task
+scheduler, then startup files and linker scripts. Same bare-metal shape as the sibling;
+course map + F407→L476RG adaptation notes in its `SYLLABUS.md`.
+_Avoid_: "the Cortex course" in docs without naming the directory once first
+
 **microcontroller-embedded-c-programming**:
 The first course project — bare-metal (no HAL) register-level, for the "Microcontroller
 Embedded C Programming" curriculum. Single `Src/main.c` overwritten per lesson; old

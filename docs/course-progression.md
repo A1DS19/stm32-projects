@@ -8,7 +8,7 @@ advance; move finished ones to the log at the bottom.
 
 | # | Course | Status | Project dir |
 |---|--------|--------|-------------|
-| 2 | Embedded Systems Programming on ARM Cortex-M3/M4 Processor (FastBit) | **next up** | — |
+| 2 | Embedded Systems Programming on ARM Cortex-M3/M4 Processor (FastBit) | **in progress** (started 2026-08-23) | `embedded-system-programming-on-arm-cortex-m3m4/` |
 | 3 | Mastering Microcontroller and Embedded Driver Development — MCU1 (FastBit) | 1% | — |
 | 4 | Mastering Microcontroller: Timers, PWM, CAN, Low Power — MCU2 (FastBit) | 1% | — |
 | 5 | ARM Cortex M Microcontroller DMA Programming Demystified (FastBit) | 1% | — |
