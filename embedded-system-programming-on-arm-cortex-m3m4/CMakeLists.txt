@@ -41,6 +41,7 @@ target_sources(${PROJECT_NAME} PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/faulthandler.c
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/tbit.c
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/memmap.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/Src/sevenseg.c
 )
 
 # CMSIS headers from the installed Cube firmware pack — register structs, no HAL sources

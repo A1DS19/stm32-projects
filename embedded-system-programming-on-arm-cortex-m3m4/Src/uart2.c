@@ -27,15 +27,24 @@ int __io_putchar(int ch) {
     return ch;
 }
 
-/* Blocking receive: wait until a byte has arrived (RXNE = "receive register
- * not empty"), then read it. Reading RDR also clears RXNE.
+/* Non-blocking receive: return the waiting byte, or -1 if none has arrived
+ * (RXNE = "receive register not empty"; reading RDR also clears it).
  * If bytes ever arrived faster than we picked them up, the overrun flag (ORE)
  * sets and reception stalls until it is cleared — clear it so input keeps
  * working after a hiccup. */
-int uart2_getc(void) {
+int uart2_poll(void) {
     if (USART2->ISR & USART_ISR_ORE) {
         USART2->ICR = USART_ICR_ORECF;
     }
-    while (!(USART2->ISR & USART_ISR_RXNE)) {}
-    return (int)(USART2->RDR & 0xFFu);
+    if (USART2->ISR & USART_ISR_RXNE) {
+        return (int)(USART2->RDR & 0xFFU);
+    }
+    return -1;
+}
+
+/* Blocking receive: poll until a byte shows up. */
+int uart2_getc(void) {
+    int byte;
+    while ((byte = uart2_poll()) < 0) {}
+    return byte;
 }
