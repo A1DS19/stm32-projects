@@ -94,10 +94,7 @@ void FLASH_IRQHandler(void) {
     printf("handler mode: FLASH ISR ran\r\n");
 }
 
-/* HANDLER mode — always privileged, even though CONTROL.nPRIV is still 1:
- * reading ISER0 here succeeds where thread mode just faulted. */
-void HardFault_Handler(void) {
-    printf("HARD FAULT — nPAL touched the System Control Space\r\n");
-    printf("handler mode is privileged anyway: ISER0=0x%lx (read OK)\r\n", (unsigned long)*ISER0);
-    for (;;) {}
-}
+/* The hard-fault reporter this lesson relied on now lives in
+ * Src/faulthandler.c — one strong HardFault_Handler for all lessons. Its
+ * SCS reads (CFSR, ISER0) carry this lesson's proof: handler mode stays
+ * privileged even with CONTROL.nPRIV=1. */
