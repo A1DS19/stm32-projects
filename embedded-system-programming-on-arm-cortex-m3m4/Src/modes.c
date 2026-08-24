@@ -32,7 +32,14 @@
  *
  * On the L476, IRQ 3 is the RTC wake-up line — we never touch the RTC
  * itself, we only borrow its interrupt number, so the ISR fires exactly
- * once per STIR write. Same IRQ number as the course's F407. */
+ * once per STIR write. Same IRQ number as the course's F407.
+ *
+ * When you'll use this: every time you write or debug interrupt code.
+ * Which mode you're in decides which stack you're on, what you may touch,
+ * and which APIs are legal (RTOSes ship special ...FromISR versions for
+ * handler mode). And when firmware dies inside an interrupt, IPSR in the
+ * debugger names the exact handler — the first breadcrumb of any crash
+ * hunt. */
 
 #include "modes.h"
 

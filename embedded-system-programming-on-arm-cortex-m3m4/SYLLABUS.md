@@ -2,7 +2,8 @@
 
 Distilled from the course slide deck (`slides.pdf`, 375 slides, 2024 edition — kept out
 of git, it's paid course material). Check sections off as they land; each lesson's code
-goes in `Src/` and git history is the archive, same as the last course.
+goes in `Src/` and git history is the archive, same as the last course. The ordered
+lesson index (what each file teaches and when it's used) is [LESSONS.md](LESSONS.md).
 
 **The one-line pitch:** the previous course was about the C language on a
 microcontroller; this one is about the *processor itself* — the Cortex-M4 core that sits

@@ -26,7 +26,14 @@
  * addresses like 0x2000_1000. On our running program that block of SRAM
  * belongs to the stack and our variables (memory-map lesson!), so we take
  * addresses of C variables instead — same LDR/STR mechanics, nothing
- * stomped. */
+ * stomped.
+ *
+ * When you'll use this: for the handful of jobs C has no words for —
+ * MRS/MSR on special registers, WFI to sleep, barrier instructions,
+ * naked functions like the stack lesson's PSP switch. Rarely more than
+ * five lines at a time, but those five lines sit at the heart of every
+ * RTOS port, and the operand contract is what keeps the compiler from
+ * silently wrecking them. */
 
 #include "inlineasm.h"
 

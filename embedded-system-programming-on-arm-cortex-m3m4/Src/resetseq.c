@@ -26,7 +26,12 @@
  * The copy/zero steps get their own lessons in the linker-script section.
  *
  * Every printed pair below must agree: the vector table read as plain
- * memory vs the linker/startup symbols the build placed there. */
+ * memory vs the linker/startup symbols the build placed there.
+ *
+ * When you'll use this: bootloaders and firmware update. Jumping to an
+ * application IS a hand-made reset sequence — read the app's vector[0]
+ * into SP, branch to its vector[1], move VTOR. Board bring-up too: when
+ * a fresh design sits dead, checking these two words is step one. */
 
 #include "resetseq.h"
 

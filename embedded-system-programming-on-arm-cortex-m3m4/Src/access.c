@@ -37,7 +37,14 @@
  * lesson flips, and FPCA is why exception stack frames come in two sizes.
  *
  * Expected serial tail: the ISR line, CONTROL=5, the hard fault report —
- * and "after" never prints. Reset the board when done. */
+ * and "after" never prints. Reset the board when done.
+ *
+ * When you'll use this: building the user/kernel wall. An RTOS drops its
+ * tasks to nPAL so a buggy task can't reprogram the NVIC, the clocks, or
+ * another task out of existence — containment instead of chaos. It also
+ * decodes a whole family of mystery crashes: "worked in main(), faults
+ * inside my task" is usually privilege, and this lesson is the
+ * diagnosis. */
 
 #include "access.h"
 

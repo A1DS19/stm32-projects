@@ -19,7 +19,13 @@
  * prints CFSR = 0x00020000: INVSTATE, exactly as decoded there.
  *
  * The instructor hardcodes a random even address (0x080001e8); we clear
- * bit 0 of a real function instead, so the demo works on any build. */
+ * bit 0 of a real function instead, so the demo works on any build.
+ *
+ * When you'll use this: any time an address is treated as code — function
+ * pointers, jump tables, a bootloader's leap into the application, and
+ * the forged task frames of the scheduler capstone (their fake xPSR must
+ * carry T=1). Knowing this turns an INVSTATE fault from an afternoon of
+ * confusion into a ten-second diagnosis. */
 
 #include "tbit.h"
 

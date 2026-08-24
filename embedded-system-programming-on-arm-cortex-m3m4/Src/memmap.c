@@ -37,7 +37,13 @@
  * CODE region — constants, the vector table), System (everything from
  * 0x2000_0000 up: SRAM, peripherals, external), and the internal PPB port.
  * Software can't watch those ports directly, but the address of every item
- * below tells you exactly which port and bus its access rode on. */
+ * below tells you exactly which port and bus its access rode on.
+ *
+ * When you'll use this: constantly, silently. Every register address you
+ * type, every linker-script region, every "why is this peripheral on
+ * APB1" datasheet moment is a walk on this map. It's also crash triage:
+ * a fault at 0x0800_xxxx is code, 0x2001_xxxx the stack, 0x4000_xxxx a
+ * driver — the address alone points at the suspect. */
 
 #include "memmap.h"
 

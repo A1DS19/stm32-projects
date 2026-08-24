@@ -24,7 +24,13 @@
  * The demo probes address 0x3C/0x3D until the module answers, so you can
  * wire it up with the firmware already running. Shows a title, our I2C3
  * peripheral's address, an uptime counter, and echoes what you type in
- * the serial terminal. */
+ * the serial terminal.
+ *
+ * When you'll use this: most of real embedded work is exactly this — a
+ * smarter chip on the far side of a bus (sensors, EEPROMs, radios,
+ * displays), driven by the same probe / init-sequence / transfer routine.
+ * Learn the pattern once here and every I2C datasheet's "write this
+ * register, then that data" section reads as familiar. */
 
 #include "oled.h"
 

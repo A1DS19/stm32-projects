@@ -37,7 +37,15 @@
  * When an interrupt fires, hardware itself pushes the caller-saved set
  * (R0-R3, R12, LR, PC, xPSR — the 8-word "stack frame") onto the ACTIVE
  * stack, which is why a plain C function works as a handler. The full
- * frame anatomy is section 8's story. */
+ * frame anatomy is section 8's story.
+ *
+ * When you'll use this: the moment firmware grows beyond one loop. The
+ * split proven here — tasks on PSP, kernel and interrupts on MSP — is
+ * the load-bearing wall of FreeRTOS, Zephyr, and the scheduler capstone;
+ * their port.c is this lesson's code with the serial numbers filed off.
+ * It's daily bread for debugging too: sizing task stacks, reading
+ * overflows, and walking fault frames all start from the full-descending
+ * model proven at the top of this file. */
 
 #include "stackmem.h"
 

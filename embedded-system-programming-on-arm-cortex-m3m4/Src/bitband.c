@@ -36,7 +36,15 @@
  * 0x1000_0000 (CODE region) is OUTSIDE the bandable megabyte, and so is
  * every GPIO port — ST parked them at 0x4800_0000 (AHB2), past the
  * peripheral megabyte. USART2 at 0x4000_4400 (APB1) is inside, so the
- * demo reads one of its status bits through the alias too. */
+ * demo reads one of its status bits through the alias too.
+ *
+ * When you'll use this: flipping a flag that mainline code and an
+ * interrupt both touch — the alias write is atomic, no disable-interrupts
+ * dance. Just as valuable is the hazard it teaches: the read-modify-write
+ * race is THE concurrency bug of embedded code, the same monster mutexes
+ * fight at task level. (Portability note: bit-banding is optional and
+ * absent on newer cores like M7/M33 — BSRR-style registers and exclusive
+ * load/store are the portable tools.) */
 
 #include "bitband.h"
 

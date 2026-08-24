@@ -28,7 +28,13 @@
  * The demo snapshots the special registers BEFORE any printf, prints the
  * lot, then reads three memory-mapped registers by bare address. Last
  * line re-reads CONTROL: printf's FPU use has set FPCA by then (bit 2 —
- * last lesson's surprise), so 0 becomes 4 between snapshot and reprint. */
+ * last lesson's surprise), so 0 becomes 4 between snapshot and reprint.
+ *
+ * When you'll use this: whenever you read disassembly, a fault dump, or
+ * the debugger's register pane — this is the vocabulary. And the register
+ * file IS a task's live state: the scheduler capstone switches tasks by
+ * saving and reloading exactly these registers, with exactly these
+ * MRS/MSR moves. */
 
 #include "coreregs.h"
 

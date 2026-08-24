@@ -42,7 +42,13 @@
  * The demo also reads USART2 without blocking, so typing a digit in the
  * serial terminal pushes it onto the display: byte arrives at USART2 RDR
  * (APB1, behind the bridge), CPU carries it across, writes GPIOB BSRR
- * (AHB2), photons. The whole bus discussion in one keypress. */
+ * (AHB2), photons. The whole bus discussion in one keypress.
+ *
+ * When you'll use this: whenever hardware hangs straight off GPIO pins —
+ * LED matrices, relays, keypads, parallel-mode character LCDs. The two
+ * transferable skills are the BSRR move (atomic multi-pin updates in one
+ * write) and multiplexing (N+M pins driving NxM loads), both of which
+ * recur in every pin-driven design. */
 
 #include "sevenseg.h"
 
