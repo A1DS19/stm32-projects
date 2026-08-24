@@ -57,7 +57,7 @@ third, most lesson-friendly view (programmer's model + register descriptions).
   *Exercise (s39): load 2 values from memory, add, store back — pure inline assembly.*
 - [x] **3. Reset sequence** (49–53) — what the core does from power-up to `main`:
   MSP fetch from address 0, reset handler, why the vector table starts with an SP value.
-- [ ] **4. Memory map & buses** (54–69) — the fixed 4 GB map (CODE/SRAM/peripheral/PPB
+- [x] **4. Memory map & buses** (54–69) — the fixed 4 GB map (CODE/SRAM/peripheral/PPB
   regions), AHB vs APB, the chip block diagram.
 - [ ] **5. Bit-banding** (70–78) — alias addresses that turn one bit into one word;
   atomic bit writes without read-modify-write.
@@ -110,3 +110,4 @@ third, most lesson-friendly view (programmer's model + register descriptions).
 | 2026-08-23 | 2 done: inline assembly | asm(template:out:in:clobbers) contract; s39 exercise via LDR/LDR/ADD/STR on &var addresses (not raw 0x2000_xxxx — our data lives there); MRS/MSR PRIMASK toggle 0→1→0. **Section 2 complete** |
 | 2026-08-24 | 3 done: reset sequence | vector[0]==&_estack, vector[1]==&Reset_Handler (Thumb bit), boot alias @0 mirrors both; our startup's walk to main explained. Finding: VTOR still 0 — ISRs fetched via the alias; a bootloader must move it. **Section 3 complete** |
 | 2026-08-24 | 2 addendum: T bit (006) | bit0 of &innocent_function cleared → BLX copies 0 into T → INVSTATE, CFSR=0x00020000 on serial. HardFault reporter extracted to shared faulthandler.c (single strong symbol; prints CFSR + the handler-mode-privilege proof) |
+| 2026-08-24 | 4 done: memory map & buses | memmap.c probes this program against the map: function/alias-word → CODE, .data/.bss/stack → SRAM, USART2/RCC/GPIOA classified APB1/AHB1/AHB2 by address alone, CPUID → PPB. Punchline: ST's SRAM2 at 0x1000_0000 — writable RAM inside ARM's CODE region (no clock enable needed); regions are zoning, vendors pick tenants. **Section 4 complete** |
