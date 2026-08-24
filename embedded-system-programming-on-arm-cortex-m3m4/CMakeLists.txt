@@ -36,6 +36,7 @@ target_sources(${PROJECT_NAME} PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/modes.c
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/access.c
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/coreregs.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/Src/inlineasm.c
 )
 
 # CMSIS headers from the installed Cube firmware pack — register structs, no HAL sources

@@ -51,7 +51,7 @@ third, most lesson-friendly view (programmer's model + register descriptions).
 ## Sections
 
 - [ ] **1. Intro & motivation** (slides 1–31) — what the course covers; why Cortex-M.
-- [ ] **2. Operation modes, access levels, inline assembly** (32–48) — thread vs handler
+- [x] **2. Operation modes, access levels, inline assembly** (32–48) — thread vs handler
   mode, privileged vs unprivileged; CONTROL and the other non-memory-mapped core
   registers; GCC inline assembly syntax (`asm volatile`, constraints).
   *Exercise (s39): load 2 values from memory, add, store back — pure inline assembly.*
@@ -107,3 +107,4 @@ third, most lesson-friendly view (programmer's model + register descriptions).
 | 2026-08-23 | 2 (started): operation modes | Thread→handler→thread proven on hardware via NVIC STIR-pended IRQ 3, IPSR printed 0→19→0 |
 | 2026-08-23 | 2: access levels (PAL vs nPAL) | CONTROL.nPRIV drop → NVIC touch hard-faults; fault handler reads ISER0 fine (handler mode always privileged). Bonus: CONTROL=5 — FPCA set by hard-float printf |
 | 2026-08-23 | 2: core registers + mapped vs not | MOV/MRS snapshot printed (PC/LR in flash, SP in SRAM, PSP=0) vs pointer reads (CPUID/ISER0/AHB2ENR). Hardware lessons: MRS reads EPSR slice (T-bit) as 0; MSP snapshot sits one call-frame below SP |
+| 2026-08-23 | 2 done: inline assembly | asm(template:out:in:clobbers) contract; s39 exercise via LDR/LDR/ADD/STR on &var addresses (not raw 0x2000_xxxx — our data lives there); MRS/MSR PRIMASK toggle 0→1→0. **Section 2 complete** |

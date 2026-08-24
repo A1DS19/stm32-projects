@@ -1,10 +1,10 @@
-/* Lesson: core registers + memory-mapped vs not; see Src/coreregs.c.
- * `make serial`. Previous: access.c (PAL/nPAL), modes.c (thread/handler). */
+/* Lesson: inline assembly; see Src/inlineasm.c. `make serial`.
+ * Previous: coreregs.c, access.c, modes.c. */
 
-#include "coreregs.h"
+#include "inlineasm.h"
 
 int main(void) {
-    playing_with_core_registers();
+    playing_with_inline_assembly();
 
     for (;;) {}
 }
