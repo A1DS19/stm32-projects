@@ -55,7 +55,7 @@ third, most lesson-friendly view (programmer's model + register descriptions).
   mode, privileged vs unprivileged; CONTROL and the other non-memory-mapped core
   registers; GCC inline assembly syntax (`asm volatile`, constraints).
   *Exercise (s39): load 2 values from memory, add, store back — pure inline assembly.*
-- [ ] **3. Reset sequence** (49–53) — what the core does from power-up to `main`:
+- [x] **3. Reset sequence** (49–53) — what the core does from power-up to `main`:
   MSP fetch from address 0, reset handler, why the vector table starts with an SP value.
 - [ ] **4. Memory map & buses** (54–69) — the fixed 4 GB map (CODE/SRAM/peripheral/PPB
   regions), AHB vs APB, the chip block diagram.
@@ -108,3 +108,4 @@ third, most lesson-friendly view (programmer's model + register descriptions).
 | 2026-08-23 | 2: access levels (PAL vs nPAL) | CONTROL.nPRIV drop → NVIC touch hard-faults; fault handler reads ISER0 fine (handler mode always privileged). Bonus: CONTROL=5 — FPCA set by hard-float printf |
 | 2026-08-23 | 2: core registers + mapped vs not | MOV/MRS snapshot printed (PC/LR in flash, SP in SRAM, PSP=0) vs pointer reads (CPUID/ISER0/AHB2ENR). Hardware lessons: MRS reads EPSR slice (T-bit) as 0; MSP snapshot sits one call-frame below SP |
 | 2026-08-23 | 2 done: inline assembly | asm(template:out:in:clobbers) contract; s39 exercise via LDR/LDR/ADD/STR on &var addresses (not raw 0x2000_xxxx — our data lives there); MRS/MSR PRIMASK toggle 0→1→0. **Section 2 complete** |
+| 2026-08-24 | 3 done: reset sequence | vector[0]==&_estack, vector[1]==&Reset_Handler (Thumb bit), boot alias @0 mirrors both; our startup's walk to main explained. Finding: VTOR still 0 — ISRs fetched via the alias; a bootloader must move it. **Section 3 complete** |

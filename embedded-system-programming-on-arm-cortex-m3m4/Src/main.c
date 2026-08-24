@@ -1,10 +1,10 @@
-/* Lesson: inline assembly; see Src/inlineasm.c. `make serial`.
- * Previous: coreregs.c, access.c, modes.c. */
+/* Lesson: reset sequence; see Src/resetseq.c. `make serial`.
+ * Previous: inlineasm.c, coreregs.c, access.c, modes.c. */
 
-#include "inlineasm.h"
+#include "resetseq.h"
 
 int main(void) {
-    playing_with_inline_assembly();
+    playing_with_reset_sequence();
 
     for (;;) {}
 }

@@ -13,6 +13,9 @@ Diagnostics:
     Remove:
       - readability-magic-numbers
       - cert-dcl37-c
+      # C++ twin of dcl37-c; both ban _-prefixed names, but extern linker
+      # symbols (_estack, _sdata, _ebss) are exactly that by convention
+      - cert-dcl51-cpp
     CheckOptions:
       readability-identifier-naming.StructCase: CamelCase
       readability-identifier-naming.EnumCase: CamelCase
@@ -21,6 +24,10 @@ Diagnostics:
       readability-identifier-naming.FunctionCase: lower_case
       readability-identifier-naming.FunctionIgnoredRegexp: .*_(IRQ)?Handler|SystemInit|__io_putchar|_[a-z]+
       readability-identifier-naming.VariableCase: lower_case
+      # _-prefixed variables are linker-script symbols; their names are fixed
+      readability-identifier-naming.VariableIgnoredRegexp: ^_.*$
+      # same symbols trip bugprone-reserved-identifier; allow them by name
+      bugprone-reserved-identifier.AllowedIdentifiers: _estack;_sidata;_sdata;_edata;_sbss;_ebss;__io_putchar
       readability-identifier-naming.ParameterCase: lower_case
       readability-identifier-naming.LocalVariableCase: lower_case
       readability-identifier-naming.ConstantCase: UPPER_CASE
