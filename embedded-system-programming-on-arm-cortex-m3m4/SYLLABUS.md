@@ -59,7 +59,7 @@ third, most lesson-friendly view (programmer's model + register descriptions).
   MSP fetch from address 0, reset handler, why the vector table starts with an SP value.
 - [x] **4. Memory map & buses** (54–69) — the fixed 4 GB map (CODE/SRAM/peripheral/PPB
   regions), AHB vs APB, the chip block diagram.
-- [ ] **5. Bit-banding** (70–78) — alias addresses that turn one bit into one word;
+- [x] **5. Bit-banding** (70–78) — alias addresses that turn one bit into one word;
   atomic bit writes without read-modify-write.
   *Exercise (s76): write 0xFF to 0x2000_0200, clear bit 7 both ways, compare.*
 - [ ] **6. Stack memory** (79–117) — MSP vs PSP, the four stack models (we use
@@ -113,3 +113,4 @@ third, most lesson-friendly view (programmer's model + register descriptions).
 | 2026-08-24 | 4 done: memory map & buses | memmap.c probes this program against the map: function/alias-word → CODE, .data/.bss/stack → SRAM, USART2/RCC/GPIOA classified APB1/AHB1/AHB2 by address alone, CPUID → PPB. Punchline: ST's SRAM2 at 0x1000_0000 — writable RAM inside ARM's CODE region (no clock enable needed); regions are zoning, vendors pick tenants. **Section 4 complete** |
 | 2026-08-24 | side demo: 3461AS 7-segment | sevenseg.c — the register model made visible: 12 GPIO pins multiplex 4 digits (segments=GPIOB single BSRR write, commons=GPIOA), typed serial digits go RDR(APB1)→BSRR(AHB2)→photons. All wiring on silkscreened Arduino pins; SEVENSEG_COMMON_ANODE flag for a 3461BS |
 | 2026-08-24 | side demo: 128x32 SSD1306 OLED | oled.c + i2c3.c — the opposite of sevenseg: pixels belong to a controller chip OUTSIDE the map, reached through I2C3 (0x4000_5C00, PC0/PC1 = A5/A4, AF4, 100 kHz from 4 MHz). Probe-until-ACK loop = hot-wirable; NACK path verified electrically (address frames go out, STOPF lands). Framebuffer+5x7 font in our SRAM, shipped in 4 bursts |
+| 2026-08-24 | 5 done: bit-banding | s76 on &bucket, not raw 0x2000_0200 (demo reads it: holds our own .data — 0x200001f8 lives there). RMW clear vs one aliased store, both → 0x7F; alias reads return single bits; peripheral alias proven on USART2 CR1.UE (0x42088000 reads 1). GPIO out of reach (0x4800_0000 > bandable MB) → that's BSRR's job. Gotcha: TXE reads 0 right after printf (TDR still full) — pick deterministic bits for demos. **Section 5 complete** |
