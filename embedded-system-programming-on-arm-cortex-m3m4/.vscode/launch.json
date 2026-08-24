@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug embedded-system-programming-on-arm-cortex-m3m4 (ST-LINK)",
+      "type": "cortex-debug",
+      "request": "launch",
+      "servertype": "stlink",
+      "cwd": "${workspaceFolder}",
+      "executable": "${workspaceFolder}/build/Debug/embedded-system-programming-on-arm-cortex-m3m4.elf",
+      "device": "STM32L476RG",
+      "interface": "swd",
+      "runToEntryPoint": "main",
+      "svdFile": "/opt/st/stm32cubeclt_1.22.0/STMicroelectronics_CMSIS_SVD/STM32L476.svd",
+      "preLaunchTask": "build embedded-system-programming-on-arm-cortex-m3m4"
+    },
+    {
+      "name": "Attach embedded-system-programming-on-arm-cortex-m3m4 (running board)",
+      "type": "cortex-debug",
+      "request": "attach",
+      "servertype": "stlink",
+      "cwd": "${workspaceFolder}",
+      "executable": "${workspaceFolder}/build/Debug/embedded-system-programming-on-arm-cortex-m3m4.elf",
+      "device": "STM32L476RG",
+      "interface": "swd",
+      "svdFile": "/opt/st/stm32cubeclt_1.22.0/STMicroelectronics_CMSIS_SVD/STM32L476.svd"
+    }
+  ]
+}
