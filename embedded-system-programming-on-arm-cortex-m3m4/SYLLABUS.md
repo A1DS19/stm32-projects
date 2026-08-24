@@ -25,6 +25,29 @@ course) translates 1:1. Chip-side differences to remember:
 
 Bit-banding, USART3, MSP/PSP, all faults, SVC, PendSV: present on the L476 — no gaps.
 
+## Instructor's code
+
+The course's official repo is cloned at `course-code/` (gitignored, like the slides):
+<https://github.com/niekiran/CortexMxProgramming> — 16 numbered STM32CubeIDE projects
+for the F407, one per lesson block. Read them as the "answer key", then write our own
+register-level L476 version; don't copy-build them (CubeIDE projects, wrong chip).
+
+| Folders | Syllabus section |
+|---|---|
+| 001–002 HelloWorld (+semihosting) | 1 intro; 12 semihosting |
+| 003–006 operation modes, inline, access levels, T-bit | 2 |
+| 007 bit_banding | 5 |
+| 008 stack | 6 |
+| 009 USART3_int_pend, 010 interrupt_priority | 7 |
+| 011 exception_entry_exit, 012 fault_gen | 8 |
+| 013 svc_number, 014 svc_operation | 9 |
+| 015 task_scheduler, 016 cmsis_task_scheduler | 10 (016 = same capstone rewritten with CMSIS helpers) |
+
+Bonus in `course-code/Documents/`: the ARM Cortex-M3 and M4 **Generic User Guides** —
+the register-level reference the NVIC/SCB/fault lessons keep citing. Workspace `docs/`
+has the M4 *datasheet* and *Technical Reference Manual*; the Generic User Guide is the
+third, most lesson-friendly view (programmer's model + register descriptions).
+
 ## Sections
 
 - [ ] **1. Intro & motivation** (slides 1–31) — what the course covers; why Cortex-M.
