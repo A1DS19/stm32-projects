@@ -35,48 +35,41 @@
  * once per STIR write. Same IRQ number as the course's F407. */
 
 #include "uart2.h"
+
 #include <stdint.h>
 #include <stdio.h>
 
-static uint32_t read_ipsr(void)
-{
-  uint32_t ipsr;
-  __asm volatile("MRS %0, IPSR" : "=r"(ipsr)); /* next lesson explains this */
-  return ipsr;
+static uint32_t read_ipsr(void) {
+    uint32_t ipsr;
+    __asm volatile("MRS %0, IPSR" : "=r"(ipsr)); /* next lesson explains this */
+    return ipsr;
 }
 
 /* Runs in THREAD mode. */
-static void generate_interrupt(void)
-{
-  volatile uint32_t *pISER0 = (uint32_t *)0xE000E100;
-  volatile uint32_t *pSTIR = (uint32_t *)0xE000EF00;
+static void generate_interrupt(void) {
+    volatile uint32_t* pISER0 = (uint32_t*)0xE000E100;
+    volatile uint32_t* pSTIR = (uint32_t*)0xE000EF00;
 
-  *pISER0 |= (1U << 3);  /* unmask IRQ 3 in the NVIC */
-  *pSTIR = (3U & 0x1FFU); /* pend IRQ 3 from software — core vectors to the ISR */
+    *pISER0 |= (1U << 3);   /* unmask IRQ 3 in the NVIC */
+    *pSTIR = (3U & 0x1FFU); /* pend IRQ 3 from software — core vectors to the ISR */
 }
 
 /* Runs in THREAD mode. */
-int main(void)
-{
-  uart2_init();
+int main(void) {
+    uart2_init();
 
-  printf("\r\nLesson: operation modes\r\n");
-  printf("thread mode: IPSR=%lu (before interrupt)\r\n",
-         (unsigned long)read_ipsr());
+    printf("\r\nLesson: operation modes\r\n");
+    printf("thread mode: IPSR=%lu (before interrupt)\r\n", (unsigned long)read_ipsr());
 
-  generate_interrupt();
+    generate_interrupt();
 
-  printf("thread mode: IPSR=%lu (after interrupt)\r\n",
-         (unsigned long)read_ipsr());
+    printf("thread mode: IPSR=%lu (after interrupt)\r\n", (unsigned long)read_ipsr());
 
-  for (;;) {
-  }
+    for (;;) {}
 }
 
 /* Runs in HANDLER mode — the startup file's vector table points IRQ 3
  * here, overriding its weak do-nothing default. */
-void RTC_WKUP_IRQHandler(void)
-{
-  printf("handler mode: IPSR=%lu (inside RTC_WKUP ISR)\r\n",
-         (unsigned long)read_ipsr());
+void RTC_WKUP_IRQHandler(void) {
+    printf("handler mode: IPSR=%lu (inside RTC_WKUP ISR)\r\n", (unsigned long)read_ipsr());
 }

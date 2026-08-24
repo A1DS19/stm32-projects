@@ -1,2 +1,55 @@
+# clangd for cross-compiled STM32 projects. The compilation database is the
+# single source of truth for flags, includes, and defines (arm-none-eabi) —
+# never add host-toolchain standard or include flags here: they fight the DB
+# and produce phantom errors. The DB exists after the first `make build`.
 CompileFlags:
   CompilationDatabase: build/Debug
+
+Index:
+  Background: Build
+
+Diagnostics:
+  UnusedIncludes: Strict
+  # MissingIncludes stays OFF: CMSIS is umbrella-header style (stm32l4xx.h
+  # pulls in core_cm4.h, the device header, etc.) — Strict would demand
+  # direct includes of headers you are told never to include directly.
+  ClangTidy:
+    Add:
+      - readability-*
+      - bugprone-*
+      - cert-*
+      - misc-*
+    Remove:
+      # register addresses and masks ARE magic numbers — the check is noise
+      - readability-magic-numbers
+      - cert-dcl37-c
+    CheckOptions:
+      # Types: PascalCase (structs, enums, typedefs)
+      readability-identifier-naming.StructCase: CamelCase
+      readability-identifier-naming.EnumCase: CamelCase
+      readability-identifier-naming.TypedefCase: CamelCase
+      readability-identifier-naming.UnionCase: CamelCase
+
+      # Functions: snake_case — but vector-table symbols are fixed names the
+      # startup file dictates (RTC_WKUP_IRQHandler, SystemInit, __io_putchar);
+      # exempt them or every ISR lights up
+      readability-identifier-naming.FunctionCase: lower_case
+      readability-identifier-naming.FunctionIgnoredRegexp: ".*_(IRQ)?Handler|SystemInit|__io_putchar|_[a-z]+"
+
+      # Variables: snake_case
+      readability-identifier-naming.VariableCase: lower_case
+      readability-identifier-naming.ParameterCase: lower_case
+      readability-identifier-naming.LocalVariableCase: lower_case
+
+      # Constants: SCREAMING_CASE
+      readability-identifier-naming.ConstantCase: UPPER_CASE
+      readability-identifier-naming.EnumConstantCase: UPPER_CASE
+      readability-identifier-naming.MacroDefinitionCase: UPPER_CASE
+
+InlayHints:
+  Enabled: true
+  ParameterNames: true
+  DeducedTypes: true
+
+Hover:
+  ShowAKA: true

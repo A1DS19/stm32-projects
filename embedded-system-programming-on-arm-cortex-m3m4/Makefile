@@ -6,7 +6,7 @@ GDB_PORT := 61234
 
 export PATH := $(CUBECLT)/CMake/bin:$(CUBECLT)/Ninja/bin:$(CUBECLT)/GNU-tools-for-STM32/bin:$(CUBECLT)/STM32CubeProgrammer/bin:$(CUBECLT)/STLink-gdb-server/bin:$(PATH)
 
-.PHONY: build flash serial debug gdb-server size symbols disasm reset clean
+.PHONY: build flash serial debug gdb-server size symbols disasm reset clean format
 
 build: $(BUILD)/build.ninja
 	cmake --build $(BUILD)
@@ -41,6 +41,9 @@ disasm: build
 
 reset:
 	STM32_Programmer_CLI -c port=SWD -rst
+
+format:
+	clang-format -i $$(find Src Inc -name '*.c' -o -name '*.h')
 
 clean:
 	rm -rf build

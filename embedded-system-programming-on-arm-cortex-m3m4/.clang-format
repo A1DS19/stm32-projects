@@ -1,0 +1,48 @@
+# C formatting for STM32 projects — LLVM base, 4-space, 100 cols, pointer-left.
+# Copy to project root as `.clang-format`; `make format` applies it to Src/ Inc/.
+# Leave ST-generated files (startup_*.S is untouched anyway; syscall.c/sysmem.c
+# reformat harmlessly) — the style matters for the code you write.
+
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 100
+
+# Braces on same line (Attach style)
+BreakBeforeBraces: Attach
+
+# Indentation
+IndentCaseLabels: true
+IndentPPDirectives: BeforeHash
+
+# Alignment
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignOperands: true
+AlignTrailingComments: true
+
+# Line breaks
+AllowShortBlocksOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+BinPackArguments: true
+BinPackParameters: true
+BreakBeforeBinaryOperators: None
+BreakBeforeTernaryOperators: true
+
+# Spacing
+SpaceAfterCStyleCast: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeParens: ControlStatements
+
+# Pointers
+DerivePointerAlignment: false
+PointerAlignment: Left
+
+# Includes
+IncludeBlocks: Regroup
+SortIncludes: true
