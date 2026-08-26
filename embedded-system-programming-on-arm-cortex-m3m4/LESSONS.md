@@ -20,6 +20,7 @@ then `make build flash serial`.
 | 7 | `memmap.c` | ARM's fixed 4 GB map (CODE/SRAM/peripheral/PPB…); AHB vs APB by address; SRAM2's CODE-region twist | Every register address ever typed; linker regions; crash triage by address alone |
 | 8 | `bitband.c` | Bit-band alias regions: one word per bit, atomic; the read-modify-write race (exercise s76, safely) | Interrupt-shared flags without disabling interrupts; understanding THE embedded concurrency bug |
 | 9 | `stackmem.c` | Full-descending proof; MSP/PSP banking via naked MSR PSP + SPSEL; handler-on-MSP; AAPCS live | The foundation of every RTOS (tasks on PSP, kernel on MSP); stack sizing and overflow forensics |
+| 10 | `nvic.c` | The exception model: system exceptions (SCB SHCSR/ICSR) vs IRQs (NVIC ISER/ISPR/IPR); software pending; 16 priority levels; preemption, tail-chaining, PRIGROUP, tie-break — all proven live | Step 2 of every driver ever (enable the line, pick a priority); latency/starvation bug triage; PendSV = the scheduler capstone's seed |
 
 ## Side demos (register model applied to real hardware)
 
