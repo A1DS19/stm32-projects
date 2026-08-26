@@ -46,6 +46,11 @@
  *     first among the waiting. Group 7 = zero pre-empt bits = nothing
  *     preempts anything, proven live in round C.
  *   - All else equal, the LOWER IRQ NUMBER wins the tie.
+ *   - System exceptions compete in the SAME contest, but their priority
+ *     bytes live in SCB SHPR1-3 (they boot at 0 = most urgent), and
+ *     three sit above everything at FIXED levels no register can move:
+ *     Reset -3, NMI -2, HardFault -1. An RTOS demotes PendSV to the
+ *     bottom so context switches never delay real interrupts.
  *
  * When you'll use this: step 2 of every driver you will ever write —
  * every UART/SPI/timer/DMA setup ends with "enable the line in NVIC,
@@ -76,6 +81,7 @@
 #define SCB_ICSR ((volatile uint32_t*)0xE000ED04)  /* pend/status: PENDSVSET=bit28 */
 #define SCB_AIRCR ((volatile uint32_t*)0xE000ED0C) /* PRIGROUP [10:8], key-locked  */
 #define SCB_SHCSR ((volatile uint32_t*)0xE000ED24) /* system handler enables       */
+#define SCB_SHPR3 ((volatile uint32_t*)0xE000ED20) /* PendSV pri byte 2, SysTick 3 */
 
 #define AIRCR_VECTKEY (0x05FAUL << 16) /* AIRCR ignores writes without this key */
 
@@ -84,7 +90,8 @@
 #define IRQ_USART3 39U  /* USART3 global interrupt — exception number 55 */
 
 /* Which demo round is running, so the shared handlers know their part.
- * 'A' equal priorities, 'B' I2C1 more urgent, 'C' PRIGROUP=7, 'T' tie. */
+ * 'A' equal priorities, 'B' I2C1 more urgent, 'C' PRIGROUP=7, 'T' tie,
+ * 'S' system-exception priority (TIM2 pends a demoted PendSV). */
 static volatile char demo_round;
 
 static uint32_t read_ipsr(void) {
@@ -128,7 +135,11 @@ void USART3_IRQHandler(void) {
 
 void TIM2_IRQHandler(void) {
     printf("\r\n  [TIM2 handler %c] enter (IPSR=%lu)\r\n", demo_round, (unsigned long)read_ipsr());
-    if (demo_round != 'T') {
+    if (demo_round == 'S') {
+        *SCB_ICSR = 1UL << 28; /* pend PendSV from inside a handler — the RTOS offload move */
+        printf("  [TIM2 handler %c] PendSV pended from in here — outranked, it waits\r\n",
+               demo_round);
+    } else if (demo_round != 'T') {
         *NVIC_ISPR0 = 1UL << IRQ_I2C1_EV; /* pend I2C1 from INSIDE a running handler */
         printf("  [TIM2 handler %c] I2C1 pended from in here — is it above this line?\r\n",
                demo_round);
@@ -214,6 +225,22 @@ void playing_with_nvic(void) {
     demo_round = 'T';
     set_irq_priority(IRQ_I2C1_EV, 0x80);
     *NVIC_ISPR0 = (1UL << IRQ_TIM2) | (1UL << IRQ_I2C1_EV);
+
+    /* 8 — system exceptions have priorities too: SCB SHPR, not NVIC IPR */
+    printf("\r\n8) SHPR3 = 0x%08lx — every configurable system exception boots at\r\n",
+           (unsigned long)*SCB_SHPR3);
+    printf("   priority 0, the most urgent programmable level. That's why demo 1's\r\n");
+    printf("   PendSV fired mid-thread instantly. Demote it: wrote 0xFF into its\r\n");
+    *SCB_SHPR3 |= 0xFFUL << 16; /* RMW: SysTick's byte lives in this word too */
+    printf("   SHPR3 byte, reads back 0x%02X — same 4-bit rule as the IPRs.\r\n",
+           (unsigned)((*SCB_SHPR3 >> 16) & 0xFFU));
+    printf("   round S: TIM2 (0x80) pends the now-0xF0 PendSV from inside its\r\n");
+    printf("   handler — the RTOS offload pattern: the context switch politely\r\n");
+    printf("   runs only after every real interrupt is done:\r\n");
+    demo_round = 'S';
+    *NVIC_ISPR0 = 1UL << IRQ_TIM2;
+    printf("   (Reset/NMI/HardFault sit above ALL of this at fixed -3/-2/-1 —\r\n");
+    printf("   no register exists to touch them)\r\n");
 
     printf("\r\ndone — 3 IRQ lines and PendSV all ran with zero peripherals configured:\r\n");
     printf("the NVIC neither knows nor cares who set the pending bit\r\n");
