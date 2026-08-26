@@ -11,8 +11,10 @@ built/flashed/verified from the terminal on the Nucleo-L476RG. Current course:
 
 - [x] Course project scaffolded (cloned from the Embedded C project shape) + 375-slide
   deck distilled into `SYLLABUS.md`; banner/LED scaffold verified on hardware (2026-08-23)
-- [ ] Sections 1–6: modes, inline assembly, reset sequence, memory map, bit-banding, stack
-- [ ] Sections 7–9: NVIC, faults, SVC/PendSV
+- [x] Sections 1–6: modes, inline assembly, reset sequence, memory map, bit-banding, stack
+  (2026-08-24; +side demos: 3461AS 7-segment, SSD1306 OLED over register-level I2C3)
+- [ ] Sections 7–9: NVIC, faults, SVC/PendSV — 7 done incl. SHPR addendum + CMSIS
+  companion lesson (2026-08-25); 8 (faults) next
 - [ ] Capstone: round-robin task scheduler (needs the 4-LED substitute decision)
 - [ ] Sections 11–12: own startup file + linker script, OpenOCD, newlib
 - [ ] **COURSE COMPLETE** → run the course-finish ritual (docs/course-progression.md)
