@@ -47,6 +47,7 @@ target_sources(${PROJECT_NAME} PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/bitband.c
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/stackmem.c
   ${CMAKE_CURRENT_SOURCE_DIR}/Src/nvic.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/Src/cmsisnvic.c
 )
 
 # CMSIS headers from the installed Cube firmware pack — register structs, no HAL sources
