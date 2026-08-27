@@ -22,6 +22,7 @@ then `make build flash serial`.
 | 9 | `stackmem.c` | Full-descending proof; MSP/PSP banking via naked MSR PSP + SPSEL; handler-on-MSP; AAPCS live | The foundation of every RTOS (tasks on PSP, kernel on MSP); stack sizing and overflow forensics |
 | 10 | `nvic.c` | The exception model: system exceptions (SCB SHCSR/ICSR/SHPR) vs IRQs (NVIC ISER/ISPR/IPR); software pending; 16 priority levels; preemption, tail-chaining, PRIGROUP, tie-break, PendSV demoted below IRQs — all proven live | Step 2 of every driver ever (enable the line, pick a priority); latency/starvation bug triage; PendSV-at-the-bottom = the scheduler capstone's seed |
 | 11 | `cmsisnvic.c` | The same NVIC through CMSIS: NVIC_SetPriority/EnableIRQ/SetPendingIRQ compile into nvic.c's stores; 0..15 vs 0x50 dialects; byte-addressable IPR (one STRB, no RMW race); negative IRQn → SCB->SHP | The day-job idiom verbatim — write CMSIS, think registers; the FreeRTOS priority-config trap, seen before it bites |
+| 12 | `faults.c` | Exception entry/exit: the 8-word stacked frame read back by naked handlers (TST LR,#4 prologue); EXC_RETURN decoded live (0xFFFFFFE9 — hard-float extended frame); UsageFault/BusFault/MemManage armed (SHCSR), caused on purpose (undefined instr, div-by-zero, exec-from-XN, load/store past SRAM) and recovered by editing the stacked pc; precise vs imprecise bus faults; escalation to HardFault (HFSR FORCED) — all proven live | The crash handler every shipping firmware carries: stacked pc = crime scene, CFSR = charge sheet, addr2line on the pc = guilty line; the imprecise-fault lie (pc past the culprit) recognized before it wastes a week |
 
 ## Side demos (register model applied to real hardware)
 
@@ -35,5 +36,5 @@ then `make build flash serial`.
 | File | Role |
 |---|---|
 | `uart2.c` | printf's backend (USART2 → ST-LINK VCP) + blocking/non-blocking receive |
-| `faulthandler.c` | The single strong HardFault_Handler: prints CFSR decoded; lessons crash into it on purpose |
+| `faulthandler.c` | The single strong HardFault_Handler + the shared reporters (named-bit CFSR decode, stacked-frame dump, EXC_RETURN — exported via `faulthandler.h`): lessons crash into it on purpose, faults.c's handlers reuse its reporters |
 | `system.c` | SystemInit: FPU on (hard-float printf hard-faults without it — do not remove) |
