@@ -31,6 +31,10 @@ Each project carries its own Makefile — `cd` into the project dir and:
 
 F5 in VS Code = build, flash, halt at `main` (Cortex-Debug, SVD registers).
 
+`embedded-system-programming-on-arm-cortex-m3m4/gnu-build/` (section 11) has its own hand
+Makefile, no CMake: `make`, `make stages`, `make analyze`, `make flash`, and the course's OpenOCD
+path `make openocd` + `make load` (OpenOCD comes bundled with CubeIDE 2.0).
+
 ## Project layout & conventions
 
 - Empty-project shape (seeded from the ST VS Code extension): `Src/` (`main.c`,

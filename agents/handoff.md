@@ -1,46 +1,42 @@
 # Where we left off
-_2026-08-30 (Cortex-M course, section 10 — the scheduler capstone — done and hardware-verified)_
+_2026-08-30 (Cortex-M course — sections 10 and 11 written; the bench probe is down)_
 
 ## This session (2026-08-30)
-- **Section 10 — task scheduler — done**, branch `feat/scheduler-lesson` merged into main:
-  `scheduler.c` = 4 tasks + idle on 2 KB `.bss` stacks, SysTick 1 ms (RELOAD 3999 from the
-  4 MHz MSI), naked PendSV switch saving `{r4-r11, EXC_RETURN}` + `s16-s31` per task (the
-  FreeRTOS CM4F shape — required because EXC_RETURN bit 4 is per-task on our hard-float
-  build), forged 17-word initial contexts (argument in r0, T bit in xPSR, task's lr → trap),
-  TCBs, `task_delay` blocking, WFI idle; two modes in one file (`SCHED_SPIN_DELAYS` vs
-  `SCHED_BLOCKING_DELAYS`), main.c runs the blocking one.
-- Evidence (serial, task 1 is the only printer): blocking on→on = 2013 ticks, idle = 2000
-  per period, T1 FPCA 0→1 after its first printf, T2's saved EXC_RETURN 0xFFFFFFFD→0xFFFFFFED
-  after one float multiply, T3/T4 stay basic; spin mode 8612 ticks, idle 0 (×4 stretch +
-  ~9 % switch overhead at 4 MHz -O0).
-- 4-LED substitute decided: PA5 (LD2/D13) + PA6 (D12) / PA7 (D11) / PA9 (D8), all CN5,
-  BSRR writes. User-side LA2016 capture of those pins (2 s / 1 s / 500 ms / 250 ms periods)
-  not yet done — optional.
-- `nvic.c`'s `PendSV_Handler` renamed `nvic_pendsv_demo` (exported in nvic.h); the
-  scheduler's handler forwards to it while `sched_started == 0`, so lesson 10 still runs.
+- **Section 10 — task scheduler — done and hardware-verified** (`scheduler.c`, merged
+  `2945ac7`): PendSV switch with per-task EXC_RETURN + s16-s31, blocking vs spin measured
+  live (2013 vs 8612 ticks/period, idle 2000 vs 0). Pins PA5/PA6/PA7/PA9.
+- **Section 11 — bare-metal build — written and host-verified** (`gnu-build/`): hand
+  Makefile, `startup.c`, `stm32l476rg.ld` from scratch, `openocd.cfg` for CubeIDE 2.0's bundled
+  OpenOCD (`…/plugins/com.st.stm32cube.ide.mcu.externaltools.openocd.linux64_*/tools/bin/openocd`
+  + `…/mcu.debug.openocd_*/resources/openocd/st_scripts`). `make` + `make analyze` prove the
+  ELF (entry, vector words, .data LMA≠VMA, weak-alias override). Details in SYLLABUS progress.
+- **Bench: SWD down since the section-10 spin-mode flash.** Every ST tool mode fails "Unable
+  to get core ID"; OpenOCD gets further — DPIDR 0x2ba01477 reads fine, then every AP access
+  returns `unknown/unexpected STLINK status code 0x5` → the probe (firmware **V2J28M18**,
+  ancient) or the MCU's debug domain, NOT the SWD wiring (DP answers) and NOT firmware (fails
+  under NRST too). USB-level reset of the ST-LINK did not help. Meanwhile NRST, VCP, Vtarget
+  3.25 V all fine; the board runs the scheduler's spin build.
 
 ## State
-- Board is running the **spin-mode** build (last successful flash); the final
-  blocking-mode re-flash failed: every SWD mode (normal/UR/hotplug/100 kHz, USB reset)
-  gives "Unable to get core ID" while NRST resets the board, VCP streams and Vtarget reads
-  3.25 V — SWDIO/SWCLK path or ST-LINK, not firmware. Bench checklist: board off the
-  breadboard (Morpho pins), CN2 jumpers both ON, probes/wires off CN7 13-16, USB
-  power-cycle. Then `make flash` once more (main.c is already blocking mode).
-  WFI in idle did not disturb the two earlier flashes (-rst).
-- Handler/IRQ claims: 3 modes, 4 access, 6 stackmem, 28/31/39 nvic.c, 29 cmsisnvic.c,
-  SVC_Handler svc.c, Usage/Bus/MemManage faults.c, HardFault faulthandler.c,
-  **PendSV_Handler + SysTick_Handler scheduler.c**.
-- Serial-verify recipe: `stty -F /dev/ttyACM1 115200 raw -echo`, background
-  `timeout N cat /dev/ttyACM1 > log`, then `make flash` (resets), read the log.
-- Not pushed — `git push` when ready.
+- `main` @ section-11 commit (see `git log`), not pushed.
+- Board: scheduler spin-mode build running. Pending re-flashes when the probe is back:
+  (1) `cd embedded-system-programming-on-arm-cortex-m3m4 && make flash` (main.c = blocking
+  scheduler); (2) `cd gnu-build && make flash` + serial → expected: sections map, variable
+  table, "42 in two places", vector words, then parks in Default_Handler on IRQ 5 (IPSR=21);
+  (3) the course's path: `make openocd` in one terminal, `make load` in another.
+- Handler claims unchanged from section 10; `gnu-build/` is a separate link (its startup.c
+  aliases everything to Default_Handler; faulthandler.c's HardFault is linked in).
 
 ## Next session
-1. **Section 11: bare-metal build with GNU tools** (slides 277–344) — own startup file,
-   C startup code, `.o` sections with objdump, linker script from scratch, OpenOCD + GDB
-   load (OpenOCD is not installed yet; the workspace flashes via STM32_Programmer_CLI —
-   decide whether to install it or map the lesson onto ST-LINK_gdbserver).
-2. Optional follow-up for section 10, as a `Log:` commit like the GDB fault autopsy:
-   the slide exercise "instruction-level stack debugging" — break in PendSV_Handler, watch
-   PSP hop between `task_stacks[i]`, dump a saved 17-word context with its EXC_RETURN.
+1. **Fix the probe first**: unplug/replug the Nucleo USB (full power cycle). If SWD still
+   fails, upgrade the ST-LINK firmware (V2J28 → current) with CubeCLT's
+   `STM32CubeProgrammer/bin/STLinkUpgrade.jar` (`java -jar …`) — user's call. Then run the
+   three pending flashes above and move the section-11 progress row from "host-verified" to
+   verified (add the serial findings).
+2. **Section 12: OpenOCD, newlib & semihosting** (slides 345–378) — `gnu-build/` already has
+   the OpenOCD server/client targets; add newlib vs newlib-nano size comparison
+   (`--specs=nano.specs`), `--gc-sections` before/after, semihosting via OpenOCD
+   (`arm semihosting enable`) or `ST-LINK_gdbserver --semihosting`, `__libc_init_array` story
+   (already in startup.c). That closes the course → run docs/course-progression.md ritual.
 3. Ritual per lesson unchanged: "When you'll use this" header + LESSONS.md row + SYLLABUS
    checkbox/progress row + hardware verify + commit (no AI attribution).
