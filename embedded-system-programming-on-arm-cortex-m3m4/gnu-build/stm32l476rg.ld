@@ -51,22 +51,25 @@ SECTIONS
     } > FLASH
 
     /* newlib's __libc_init_array walks three constructor tables using
-     * these six symbols. C has no constructors, so the tables are empty —
-     * but the symbols must exist or the link fails. KEEP for the same
-     * reason as the vector table. */
-    .preinit_array :
+     * these six symbols; main.c's constructor (section 12) is one entry.
+     * The symbols must exist or the link fails. KEEP for the same reason
+     * as the vector table. READONLY: the compiler marks these tables
+     * writable, but nothing writes them at run time — without the word
+     * the linker merges them into the code segment and warns that it is
+     * now read-write-execute. */
+    .preinit_array (READONLY) :
     {
         __preinit_array_start = .;
         KEEP(*(.preinit_array*))
         __preinit_array_end = .;
     } > FLASH
-    .init_array :
+    .init_array (READONLY) :
     {
         __init_array_start = .;
         KEEP(*(.init_array*))
         __init_array_end = .;
     } > FLASH
-    .fini_array :
+    .fini_array (READONLY) :
     {
         __fini_array_start = .;
         KEEP(*(.fini_array*))
@@ -118,6 +121,7 @@ SECTIONS
         _ebss = .;
         . = ALIGN(8);
         _end = .;               /* the heap grows up from here (sysmem.c's _sbrk) */
+        PROVIDE(end = .);       /* same address, the name newlib's own _sbrk asks for */
     } > SRAM1
 
     /* Refuse to link if data + bss + heap + stack cannot fit. */

@@ -8,8 +8,7 @@ advance; move finished ones to the log at the bottom.
 
 | # | Course | Status | Project dir |
 |---|--------|--------|-------------|
-| 2 | Embedded Systems Programming on ARM Cortex-M3/M4 Processor (FastBit) | **in progress** (started 2026-08-23) | `embedded-system-programming-on-arm-cortex-m3m4/` |
-| 3 | Mastering Microcontroller and Embedded Driver Development — MCU1 (FastBit) | 1% | — |
+| 3 | Mastering Microcontroller and Embedded Driver Development — MCU1 (FastBit) | **next up** (1%) | — |
 | 4 | Mastering Microcontroller: Timers, PWM, CAN, Low Power — MCU2 (FastBit) | 1% | — |
 | 5 | ARM Cortex M Microcontroller DMA Programming Demystified (FastBit) | 1% | — |
 | 6 | Mastering RTOS: Hands on FreeRTOS and STM32Fx with Debugging (FastBit) | 2% | — |
@@ -57,5 +56,6 @@ Not foundation steps — project courses that apply the driver skills from step 
 
 | Course | Finished | Notes |
 |--------|----------|-------|
+| Embedded Systems Programming on ARM Cortex-M3/M4 Processor (FastBit) | 2026-08-30 | Step 2 of the main path, one week on the bench. 16 lessons in `embedded-system-programming-on-arm-cortex-m3m4/` (LESSONS.md is the map): modes, core registers, inline asm, reset, memory map, bit-banding, MSP/PSP, NVIC (+CMSIS), faults, SVC, a from-scratch round-robin scheduler, then `gnu-build/` — own startup file, linker script and Makefile, OpenOCD/GDB, newlib vs nano, semihosting. Every lesson hardware-verified; slide errors caught and documented (VECTPENDING, SVCALLPENDED, EXC_RETURN in the frame's lr slot, tick before PSP). Bonus: 7-segment + SSD1306 side demos, a GDB fault autopsy, and the ST-LINK firmware outage diagnosed with OpenOCD |
 | Microcontroller Embedded C Programming: Absolute Beginners (FastBit) | 2026-08-22 | Step 1 of the main path. Register-level on the Nucleo-L476RG, no HAL; one lesson per file in `microcontroller-embedded-c-programming/` (main.c points at the current one, git is the archive). Bonus beyond the course: 4x4 keypad integration + MCU-as-continuity-tester (keydiag.c) |
 | Curso diseño PCB: Controlador de vuelo para drones Arduino | 2026 (before 2026-08-17) | Fed the drone-flight-controller project |

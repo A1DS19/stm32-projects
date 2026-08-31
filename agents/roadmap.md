@@ -17,8 +17,10 @@ built/flashed/verified from the terminal on the Nucleo-L476RG. Current course:
   all hardware-verified (2026-08-25/26)
 - [x] Capstone: round-robin task scheduler — PendSV switch with per-task EXC_RETURN + FPU
   half, blocking vs spin measured live; 4-LED substitute = PA5/PA6/PA7/PA9 (2026-08-30)
-- [ ] Sections 11–12: own startup file + linker script, OpenOCD, newlib
-- [ ] **COURSE COMPLETE** → run the course-finish ritual (docs/course-progression.md)
+- [x] Sections 11–12: `gnu-build/` — own startup file + linker script + hand Makefile, OpenOCD
+  (bundled) + GDB load, newlib vs nano vs gc vs semihosting measured, scripted OpenOCD (2026-08-30)
+- [x] **COURSE COMPLETE** — "Embedded System Programming on ARM Cortex-M3/M4" (FastBit), every
+  section register-level and verified on the Nucleo-L476RG (2026-08-30); finish ritual run
 
 ## Milestones — Embedded C course era (complete)
 

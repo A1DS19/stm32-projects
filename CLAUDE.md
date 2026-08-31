@@ -2,9 +2,10 @@
 
 STM32 workspace for the Nucleo-L476RG, CLI-first: CubeCLT builds, flashes, and debugs —
 no IDE in the loop. Hosts one directory per online-course project, each self-contained
-with its own Makefile. Current: `embedded-system-programming-on-arm-cortex-m3m4/` — the
-Cortex-M4 processor course (modes, stack, NVIC, faults, scheduler capstone); course map in
-its `SYLLABUS.md`. Completed: `microcontroller-embedded-c-programming/` (Embedded C course).
+with its own Makefile. Completed: `microcontroller-embedded-c-programming/` (Embedded C course)
+and `embedded-system-programming-on-arm-cortex-m3m4/` (the Cortex-M4 processor course — modes,
+stack, NVIC, faults, scheduler capstone, own startup/linker script; map in its `SYLLABUS.md`).
+Next course: MCU1 (driver development), not started — see docs/course-progression.md.
 Both bare-metal (no HAL) register-level: each lesson in its own `Src/<lesson>.c` (+
 `Inc/` header), `main.c` is a thin dispatcher pointing at the current one, git history
 is the archive.
@@ -31,9 +32,11 @@ Each project carries its own Makefile — `cd` into the project dir and:
 
 F5 in VS Code = build, flash, halt at `main` (Cortex-Debug, SVD registers).
 
-`embedded-system-programming-on-arm-cortex-m3m4/gnu-build/` (section 11) has its own hand
-Makefile, no CMake: `make`, `make stages`, `make analyze`, `make flash`, and the course's OpenOCD
-path `make openocd` + `make load` (OpenOCD comes bundled with CubeIDE 2.0).
+`embedded-system-programming-on-arm-cortex-m3m4/gnu-build/` (sections 11–12) has its own hand
+Makefile, no CMake: `make`, `make stages`, `make analyze`, `make flash`, the course's OpenOCD
+path `make openocd` + `make load`, the library variants `make nano` / `gc` / `semi` / `compare`,
+and the scripted OpenOCD runs `make inspect` / `make run-semi` (OpenOCD comes bundled with
+CubeIDE 2.0).
 
 ## Project layout & conventions
 

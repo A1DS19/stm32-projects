@@ -27,6 +27,20 @@
  * .o (sections at address 0, calls as relocations), readelf on the ELF
  * (sections placed, LOAD segments), nm for the symbols, and the map.
  *
+ * Section 12 (slides 345-378) reuses this folder: the SAME program linked
+ * four ways — full newlib, newlib-nano (`make nano`), with dead code
+ * removed (`make gc`), and printing through the debugger instead of the
+ * UART (`make semi`, semihosting) — `make compare` puts the four sizes
+ * side by side. printf is the thread that ties them: it ends in a tiny
+ * function called _write(), and WHO provides _write() decides where the
+ * text goes. ../Src/syscall.c hands it to uart2 (USART2); librdimon's
+ * version executes BKPT 0xAB and lets OpenOCD print it on the host. Two
+ * scripted OpenOCD runs close the course: `make inspect` reads our memory
+ * through the debug port (the AHB-AP) and watches Reset_Handler overwrite
+ * garbage the debugger planted; `make run-semi` shows the semihosting
+ * trap stopping the core dead when nobody is listening, then the same
+ * text flowing once `arm semihosting enable` is on.
+ *
  * When you'll use this: every board bring-up starts with a startup file
  * and a linker script — a new chip, a new memory layout, a bootloader
  * that must leave room for the application, code that has to run from
@@ -35,13 +49,34 @@
  * copied), "my table of zeros costs 8 KB of flash" (it was initialized
  * to 0 explicitly and became .data instead of .bss), "it links but
  * crashes before main" (vector[0] or [1] wrong, or _estack in the wrong
- * memory), "undefined reference to _init" (the -nostartfiles trap). All
- * of them are in this folder, on purpose or by explanation. */
-
-#include "uart2.h"
+ * memory), "undefined reference to _init" (the -nostartfiles trap), "my
+ * float prints as nothing" (newlib-nano without -u _printf_float), "it
+ * hangs at the first printf in the field" (semihosting left on with no
+ * debugger attached), the 30 KB nobody knew --gc-sections would save.
+ * All of them are in this folder, on purpose or by explanation. */
 
 #include <stdint.h>
 #include <stdio.h>
+
+/* ---- section 12: who answers printf's _write()? ----
+ * SEMIHOSTING builds link librdimon (--specs=rdimon.specs): its _write()
+ * is a BKPT 0xAB the debugger services, and it must be told to open
+ * stdout first. Normal builds use ../Src/syscall.c → uart2. */
+#ifdef SEMIHOSTING
+extern void initialise_monitor_handles(void);
+static const char console_name[] = "semihosting: printf → librdimon _write → BKPT 0xAB → OpenOCD";
+#else
+    #include "uart2.h"
+static const char console_name[] = "USART2: printf → syscall.c _write → uart2 __io_putchar";
+#endif
+
+static void console_init(void) {
+#ifdef SEMIHOSTING
+    initialise_monitor_handles();
+#else
+    uart2_init();
+#endif
+}
 
 /* ---- the linker script's symbols (names for addresses) ---- */
 extern uint32_t _estack, _sidata, _sdata, _edata, _sbss, _ebss, _end, _etext;
@@ -55,6 +90,29 @@ extern const uint32_t vectors[]; /* startup.c's table */
 int global_init = 42;             /* .data: initialized global */
 int global_uninit[64];            /* .bss: uninitialized global, 256 bytes of SRAM, 0 of FLASH */
 const char rodata_text[] = "hi!"; /* .rodata: constant, stays in FLASH */
+
+/* ---- section 12: is __libc_init_array real? ----
+ * A function marked constructor is listed in .init_array — the table our
+ * linker script collects between __init_array_start and __init_array_end
+ * — and __libc_init_array, called from Reset_Handler, runs it before
+ * main. The mark lives in .bss: zeroed by our loop first, then set here. */
+static uint32_t constructor_mark;
+
+__attribute__((constructor)) static void before_main(void) {
+    constructor_mark = 0xC0FFEEU;
+}
+
+/* ---- section 12: bait for --gc-sections ----
+ * Nobody calls or reads these. A plain link keeps them anyway: the linker
+ * works in whole input sections and main.o's .text is ONE section. With
+ * -ffunction-sections/-fdata-sections each gets a section of its own and
+ * --gc-sections drops them (`make analyze-gc`). Not static, so the
+ * compiler emits them without complaint. */
+void unused_helper(void);
+void unused_helper(void) {
+    global_uninit[0]++;
+}
+const uint32_t unused_table[256] = {[0] = 1, [255] = 256}; /* 1 KB of .rodata */
 
 static const char* where(const void* addr) {
     uint32_t a = (uint32_t)addr;
@@ -137,16 +195,25 @@ static void show_vector_table(void) {
     printf("   served this time by a C array with a section attribute\r\n");
 }
 
+static void show_constructor(void) {
+    printf("\r\n6) __libc_init_array ran the .init_array table before main: constructor_mark = "
+           "0x%06lX\r\n",
+           (unsigned long)constructor_mark);
+    printf("   (a .bss word: zeroed by Reset_Handler's loop, set by a constructor, read here)\r\n");
+}
+
 int main(void) {
-    uart2_init();
+    console_init();
 
     printf("\r\nLesson: the bare-metal build — our own startup file and linker script, no IDE, no "
            "CMake\r\n");
+    printf("console: %s\r\n", console_name);
 
     show_map();
     show_variables();
     show_data_and_bss_proof();
     show_vector_table();
+    show_constructor();
 
     printf("\r\n5) an interrupt nobody wrote a handler for: enable + pend IRQ %lu (RCC).\r\n",
            (unsigned long)IRQ_RCC);

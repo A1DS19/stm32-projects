@@ -1,39 +1,27 @@
 # Where we left off
-_2026-08-30 (Cortex-M course — sections 10 and 11 done and hardware-verified; probe fixed)_
+_2026-08-30 (Cortex-M course — COMPLETE; sections 10, 11 and 12 all done today)_
 
 ## This session (2026-08-30)
-- **Section 10 — task scheduler — done** (`scheduler.c`, `2945ac7`): PendSV switch with
-  per-task EXC_RETURN + s16-s31, blocking vs spin measured live. Pins PA5/PA6/PA7/PA9.
-- **Section 11 — bare-metal build — done** (`gnu-build/`, `b419bb5` + docs commit): hand
-  Makefile, `startup.c`, `stm32l476rg.ld` from scratch, `openocd.cfg`. Board-verified two
-  ways: `make flash` (STM32_Programmer_CLI) and the course's `make openocd` + `make load`
-  (CubeIDE 2.0's bundled OpenOCD, GDB `load`) — identical serial output, ends parked in
-  Default_Handler on IRQ 5 (IPSR=21). Findings in SYLLABUS progress rows.
-- **Bench outage solved**: the ST-LINK firmware (V2J28M18) was the culprit — DP answered,
-  every AP access returned STLINK status 0x5. `/opt/st/stm32cubeclt_1.22.0/STLinkUpgrade.sh`
-  (headless, `-update`) → V2J48M35 and SWD came straight back. Recorded in SYLLABUS + memory.
+- Section 10 (scheduler.c), 11 (`gnu-build/`: own startup + linker script + Makefile,
+  OpenOCD/GDB load) and 12 (`gnu-build/` variants: newlib vs nano vs gc vs semihosting,
+  `make inspect` / `make run-semi` scripted OpenOCD) — all hardware-verified, see the
+  SYLLABUS progress rows for the numbers and findings.
+- Bench: the ST-LINK firmware (V2J28M18) had killed SWD; `STLinkUpgrade.sh` → V2J48M35
+  fixed it (SYLLABUS bench row + memory `stlink-ap-status-0x5`).
+- Course-finish ritual run: docs/course-progression.md (row removed, Completed log, MCU1
+  "next up"), roadmap milestones ticked, README + CLAUDE.md now list both courses complete.
 
 ## State
-- `main` up to date with the section-11 docs commit, not pushed.
-- Board: running `gnu-build/build/final.elf`, parked in Default_Handler by design. The CMake
-  project's main.c points at `playing_with_scheduler(SCHED_BLOCKING_DELAYS)` and was
-  re-flashed and verified before that.
-- Handler claims unchanged (scheduler.c owns PendSV + SysTick in the CMake project;
-  `gnu-build/` is a separate link).
-- Serial-verify recipe: resolve the VCP by udev identity (`ID_MODEL=STM32_STLink` — it was
-  /dev/ttyACM1 again after the re-enumeration), `stty … 115200 raw -echo`, background
-  `timeout N cat`, then flash. Gotcha from tonight: never `pkill -f` a pattern that appears
-  in your own shell command line (`pkill -x openocd` instead).
+- `main` at the section-12 commit, not pushed (`git push` when ready).
+- Board: `gnu-build/build/final.elf` (UART build), parked in Default_Handler by design.
+  The CMake project's main.c still points at the blocking scheduler.
+- `gnu-build/` targets: all/stages/analyze/flash/openocd/load/debug/serial/clean +
+  nano/gc/semi/compare/analyze-gc/inspect/run-semi. OpenOCD = CubeIDE 2.0's bundled build.
 
 ## Next session
-1. **Section 12: OpenOCD, newlib & semihosting** (slides 345–378), the last one. Build on
-   `gnu-build/`: newlib vs newlib-nano size comparison (`--specs=nano.specs`,
-   `-u _printf_float`), `--gc-sections` + `-ffunction-sections` before/after in the map,
-   semihosting printf through OpenOCD (`arm semihosting enable`, `--specs=rdimon.specs`
-   → `initialise_monitor_handles`) and/or `ST-LINK_gdbserver --semihosting`,
-   `__libc_init_array` is already told in startup.c. Then the course-finish ritual
-   (docs/course-progression.md: status column + Completed log + roadmap) and commit.
-2. After the course: the capstone decision (memory: capstone-after-roadmap — front-runner
-   point-to-point LoRa messenger).
-3. Ritual per lesson unchanged: "When you'll use this" header + LESSONS.md row + SYLLABUS
-   checkbox/progress row + hardware verify + commit (no AI attribution).
+1. **Decide what's next** — per memory `capstone-after-roadmap`: the course roadmap is done,
+   so either the culminating project (front-runner: point-to-point LoRa messenger) or the
+   next course, MCU1 (driver development — needs a new project dir via /stm32-new-project).
+   The user decides; nothing is started.
+2. Optional loose ends: LA2016 capture of the scheduler's four pins (PA5/PA6/PA7/PA9); the
+   GDB stack-activity log for the scheduler (slide exercise); `git push`.

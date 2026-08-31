@@ -4,12 +4,17 @@ Embedded firmware workspace for online course work on the **STM32 Nucleo-L476RG*
 entirely from the CLI — no IDE in the loop. One directory per course, each self-contained
 with its own Makefile.
 
-## Current project
+## Projects
 
-[`microcontroller-embedded-c-programming/`](microcontroller-embedded-c-programming/) —
-bare-metal (no HAL) register-level project for the *Microcontroller Embedded C
-Programming* course. Single `Src/main.c` overwritten per lesson; git history is the
-lesson archive. Full learning path: [docs/course-progression.md](docs/course-progression.md).
+- [`embedded-system-programming-on-arm-cortex-m3m4/`](embedded-system-programming-on-arm-cortex-m3m4/)
+  — the Cortex-M4 *processor* course, completed 2026-08-30: one lesson per `Src/<lesson>.c`
+  (its `LESSONS.md` is the map), plus `gnu-build/` — the same board built with a hand Makefile,
+  our own startup file and linker script, OpenOCD/GDB, newlib variants and semihosting.
+- [`microcontroller-embedded-c-programming/`](microcontroller-embedded-c-programming/) — the
+  *Embedded C* course, completed 2026-08-22; single `Src/main.c` overwritten per lesson.
+
+Both bare-metal (no HAL), register-level; git history is the lesson archive. Next course: MCU1
+(driver development). Full learning path: [docs/course-progression.md](docs/course-progression.md).
 
 ## Hardware & toolchain
 
