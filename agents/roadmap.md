@@ -13,9 +13,10 @@ built/flashed/verified from the terminal on the Nucleo-L476RG. Current course:
   deck distilled into `SYLLABUS.md`; banner/LED scaffold verified on hardware (2026-08-23)
 - [x] Sections 1–6: modes, inline assembly, reset sequence, memory map, bit-banding, stack
   (2026-08-24; +side demos: 3461AS 7-segment, SSD1306 OLED over register-level I2C3)
-- [ ] Sections 7–9: NVIC, faults, SVC/PendSV — 7 done incl. SHPR addendum + CMSIS
-  companion lesson (2026-08-25); 8 (faults) next
-- [ ] Capstone: round-robin task scheduler (needs the 4-LED substitute decision)
+- [x] Sections 7–9: NVIC (+SHPR addendum, CMSIS companion), faults (+GDB autopsy), SVC —
+  all hardware-verified (2026-08-25/26)
+- [x] Capstone: round-robin task scheduler — PendSV switch with per-task EXC_RETURN + FPU
+  half, blocking vs spin measured live; 4-LED substitute = PA5/PA6/PA7/PA9 (2026-08-30)
 - [ ] Sections 11–12: own startup file + linker script, OpenOCD, newlib
 - [ ] **COURSE COMPLETE** → run the course-finish ritual (docs/course-progression.md)
 

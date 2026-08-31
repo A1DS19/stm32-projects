@@ -120,10 +120,11 @@ static uint8_t get_irq_priority(uint32_t irq) {
 /* ---- the handlers (weak Default_Handler in startup, strong here) ---- */
 
 /* PendSV: a system exception, so its pend bit lives in SCB ICSR, not in
- * any NVIC register. Sections 9-10 (SVC, the scheduler capstone) will
- * take this symbol over — same single-strong-symbol rule as
- * faulthandler.c's HardFault_Handler. */
-void PendSV_Handler(void) {
+ * any NVIC register. The strong PendSV_Handler symbol now belongs to
+ * scheduler.c (same single-strong-symbol rule as faulthandler.c's
+ * HardFault_Handler); until the scheduler starts, its handler forwards
+ * here, so this lesson still runs by pointing main.c at it. */
+void nvic_pendsv_demo(void) {
     printf("  [PendSV handler] IPSR=%lu — system exception, no IRQ number at all\r\n",
            (unsigned long)read_ipsr());
 }
